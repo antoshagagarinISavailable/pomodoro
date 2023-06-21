@@ -21,7 +21,7 @@
               <input
                 id="setPomodoro"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 class=""
                 value="25"
@@ -32,7 +32,7 @@
               <input
                 id="setQuickBreak"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 class=""
                 value="5"
@@ -43,7 +43,7 @@
               <input
                 id="setLongBreak"
                 type="number"
-                min="0"
+                min="1"
                 step="1"
                 class=""
                 value="15"
@@ -78,7 +78,10 @@
         <div class="timer-wrapper wrapper wrap-dark">
           <ul class="timer-mode-list large-text">
             <li>
-              <button id="pomodoroChooseButton" class="timer-mode-list">
+              <button
+                id="pomodoroChooseButton"
+                class="timer-mode-list timer-mode-list_active"
+              >
                 <span>pomodoro</span>
               </button>
             </li>
@@ -100,7 +103,7 @@
               <span class="timer-string__seconds">00</span>
             </p>
           </div>
-          <button class="start-button light">start</button>
+          <button id="startButton" class="start-button light">start</button>
           <div class="current-todo-wrap">
             <span>#2</span>
             <span>todoname</span>
