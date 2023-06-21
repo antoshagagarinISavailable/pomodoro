@@ -1,0 +1,14 @@
+@media screen and (min-width: 768px) {
+  .container {
+    width: 50vw;
+
+    display: grid;
+    grid-template-rows: max-content 1fr;
+    gap: 5vw;
+
+    margin: 5vw auto;
+  }
+  .main-container {
+    gap: 5vw;
+  }
+}

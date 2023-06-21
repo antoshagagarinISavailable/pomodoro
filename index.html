@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/index.css" />
+    <title>Pomodoro</title>
+  </head>
+  <body class="dark">
+    <div class="settings-modal none">
+      <div class="settings-modal__header">
+        <button id="settingsCloseButton">close</button>
+        <button id="settingsSaveButton">save</button>
+      </div>
+      <div class="settings-modal__main">
+        <div class="settings-modal__main__unit-with-list">
+          <p class="x-large-text">time (minutes)</p>
+          <ul>
+            <li>
+              <label class="large-text" for="setPomodoro">pomodoro</label>
+              <input
+                id="setPomodoro"
+                type="number"
+                min="0"
+                step="1"
+                class=""
+                value="25"
+              />
+            </li>
+            <li>
+              <label class="large-text" for="setQuickBreak">quick break</label>
+              <input
+                id="setQuickBreak"
+                type="number"
+                min="0"
+                step="1"
+                class=""
+                value="5"
+              />
+            </li>
+            <li>
+              <label class="large-text" for="setLongBreak">long break</label>
+              <input
+                id="setLongBreak"
+                type="number"
+                min="0"
+                step="1"
+                class=""
+                value="15"
+              />
+            </li>
+          </ul>
+        </div>
+        <div class="settings-modal__main__unit">
+          <label class="x-large-text" for="setLongBreakInterval"
+            >long break interval</label
+          >
+          <input
+            id="setLongBreakInterval"
+            type="number"
+            min="0"
+            step="1"
+            class=""
+            value="3"
+          />
+        </div>
+      </div>
+      <!-- <div class="settings-modal__footer">
+        <button>save</button>
+      </div> -->
+    </div>
+    <div class="container">
+      <header class="space-between-layout wrapper wrap-dark">
+        <h1>logo</h1>
+        <button id="mainSettingsButton">settings</button>
+      </header>
+      <main class="main-container">
+        <div class="timer-wrapper wrapper wrap-dark">
+          <ul class="timer-mode-list large-text">
+            <li>
+              <button id="pomodoroChooseButton" class="timer-mode-list">
+                <span>pomodoro</span>
+              </button>
+            </li>
+            <li>
+              <button id="quickBreakChooseButton" class="timer-mode-list">
+                <span>quick break</span>
+              </button>
+            </li>
+            <li>
+              <button id="longBreakChooseButton" class="timer-mode-list">
+                <span>long break</span>
+              </button>
+            </li>
+          </ul>
+          <div class="timer-string-wrap">
+            <p class="timer-string">
+              <span class="timer-string__minutes">25</span>
+              <span>:</span>
+              <span class="timer-string__seconds">00</span>
+            </p>
+          </div>
+          <button class="start-button light">start</button>
+          <div class="current-todo-wrap">
+            <span>#2</span>
+            <span>todoname</span>
+          </div>
+        </div>
+        <section class="todos-wrapper wrapper wrap-dark">
+          <!-- модалка для создания todo -->
+          <div class="create-todo-modal none">
+            <div class="create-todo-modal__main">
+              <input id="newTodoText" type="text" placeholder="got new task?" />
+              <div class="create-todo-modal__main__takesPomos">
+                <label for="newTodoTakesPomos">takes pomos</label>
+                <input
+                  id="newTodoTakesPomos"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="1"
+                />
+              </div>
+            </div>
+            <div class="create-todo-modal__footer">
+              <button id="cancelNewTodo">cancel</button>
+              <button id="saveNewTodo">save</button>
+            </div>
+          </div>
+          <div class="space-between-layout">
+            <h3 class="todos-header large-text">Tasks</h3>
+            <button class="addTodoButton svg-plug svg">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                x="0px"
+                y="0px"
+                width="16"
+                height="16"
+                stroke="#ccc"
+                role="img"
+              >
+                <path d="M 8 4 v 8 M 4 8 h 8"></path>
+              </svg>
+            </button>
+          </div>
+          <div class="todos-body">
+            <div class="todos-list">
+              <ul>
+                <li>
+                  <div class="todo-wrap">
+                    <div class="svg-plug">#1</div>
+                    <p class="large-text">todo description</p>
+                    <div class="todo-settings">
+                      <div class="pomo-iterations">
+                        <span class="pomo-iterations__actual actual"> 0 </span>
+                        <span>/</span>
+                        <span class="pomo-iterations__expected expected">
+                          1
+                        </span>
+                      </div>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        x="0px"
+                        y="0px"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 30 30"
+                        fill="#ccc"
+                      >
+                        <circle cx="12" cy="12" r="20" opacity="0" />
+                        <circle cx="12" cy="2" r="2" opacity="0.8" />
+                        <circle cx="12" cy="12" r="2" opacity="0.8" />
+                        <circle cx="12" cy="22" r="2" opacity="0.8" />
+                      </svg>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="todo-wrap">
+                    <div class="svg-plug">#3</div>
+                    <p class="large-text">lorem*10</p>
+                    <div class="todo-settings">
+                      <div class="pomo-iterations">
+                        <span class="pomo-iterations__actual actual"> 0 </span>
+                        <span>/</span>
+                        <span class="pomo-iterations__expected expected">
+                          1
+                        </span>
+                      </div>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        x="0px"
+                        y="0px"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 30 30"
+                        fill="#ccc"
+                      >
+                        <circle cx="12" cy="12" r="20" opacity="0" />
+                        <circle cx="12" cy="2" r="2" opacity="0.8" />
+                        <circle cx="12" cy="12" r="2" opacity="0.8" />
+                        <circle cx="12" cy="22" r="2" opacity="0.8" />
+                      </svg>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="todo-wrap">
+                    <div class="svg-plug">#2</div>
+                    <p class="large-text">todo description</p>
+                    <div class="todo-settings">
+                      <div class="pomo-iterations">
+                        <span class="pomo-iterations__actual actual"> 0 </span>
+                        <span>/</span>
+                        <span class="pomo-iterations__expected expected">
+                          1
+                        </span>
+                      </div>
+
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        x="0px"
+                        y="0px"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 30 30"
+                        fill="#ccc"
+                      >
+                        <circle cx="12" cy="12" r="20" opacity="0" />
+                        <circle cx="12" cy="2" r="2" opacity="0.8" />
+                        <circle cx="12" cy="12" r="2" opacity="0.8" />
+                        <circle cx="12" cy="22" r="2" opacity="0.8" />
+                      </svg>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="/index.js"></script>
+  </body>
+</html>

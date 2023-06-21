@@ -1,0 +1,86 @@
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  width: 10vw;
+  background-color: var(--input-bg-light);
+  border-radius: 5px;
+  padding: 0.5em;
+}
+
+.settings-modal {
+  background-color: black;
+
+  padding: 5vw;
+
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 10;
+
+  display: grid;
+  grid-template-rows: max-content max-content;
+  gap: 5vh;
+}
+
+.settings-modal__header {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  align-items: start;
+}
+.settings-modal__main {
+  display: grid;
+  grid-template-rows: repeat(max-content);
+  gap: 10vw;
+}
+.settings-modal__main ul {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+}
+.settings-modal__main li {
+  display: grid;
+  gap: 2.5vw;
+}
+.settings-modal__main__unit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.settings-modal__main__unit-with-list {
+  display: grid;
+  gap: 2.5vw;
+}
+
+/* модалка для создания todo */
+
+.create-todo-modal {
+  display: grid;
+  gap: 5vw;
+
+  padding-bottom: 5vw;
+  border-bottom: 1px solid var(--input-bg-light);
+}
+
+.create-todo-modal__main {
+  display: grid;
+  gap: 5vw;
+}
+
+.create-todo-modal__footer {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: space-between;
+  gap: 5vw;
+}
+.create-todo-modal__main__takesPomos {
+  display: grid;
+  gap: 1.25vw;
+}
