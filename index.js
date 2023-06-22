@@ -67,8 +67,7 @@ if (todos.length > 0) {
     todos[0].description;
 }
 
-// все const по settings
-
+// все переменные по settings
 let donePomodoroCount =
   JSON.parse(localStorage.getItem("donePomodoroCount")) || 0;
 let longBreakInterval =
@@ -82,12 +81,12 @@ const setQuickBreak = document.querySelector("#setQuickBreak");
 const setLongBreak = document.querySelector("#setLongBreak");
 const setLongBreakInterval = document.querySelector("#setLongBreakInterval");
 
-//кнопки для settings
+//кнопки по settings
 const mainSettingsButton = document.querySelector("#mainSettingsButton");
 const settingsCloseButton = document.querySelector("#settingsCloseButton");
 const settingsSaveButton = document.querySelector("#settingsSaveButton");
 
-//слушатели по модалке настроек
+//слушатели по settings
 mainSettingsButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
 });
@@ -104,23 +103,7 @@ settingsSaveButton.addEventListener("click", () => {
   localStorage.setItem("longBreak", JSON.stringify(longBreak));
   localStorage.setItem("longBreakInterval", JSON.stringify(longBreakInterval));
 
-  /* рендерим изначальный таймер
-по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
-либо сколько осталось вермени / либо сколько минут в режиме */
-  if (pomodoro.timeLeft > 0) {
-    timerSeconds.textContent =
-      pomodoro.timeLeft % 60 >= 10
-        ? `${pomodoro.timeLeft % 60}`
-        : `0${pomodoro.timeLeft % 60}`;
-    timerMinutes.textContent =
-      Math.floor(pomodoro.timeLeft / 60) >= 10
-        ? `${Math.floor(pomodoro.timeLeft / 60)}`
-        : `0${Math.floor(pomodoro.timeLeft / 60)}`;
-  } else {
-    timerMinutes.textContent =
-      pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
-    timerSeconds.textContent = "00";
-  }
+  initialTimerRender();
 
   settingsModal.classList.toggle("none");
 });
@@ -169,10 +152,10 @@ const quickBreakChooseButton = document.querySelector(
 );
 const longBreakChooseButton = document.querySelector("#longBreakChooseButton");
 const pomodoroChooseButton = document.querySelector("#pomodoroChooseButton");
-const changeModeButtons = document.querySelectorAll(".timer-mode-list button");
 
 //кнопка start
 const startButton = document.querySelector("#startButton");
+//кнопка next
 const resetButton = document.querySelector("#resetButton");
 
 //глобальные переменные для таймера
@@ -190,28 +173,9 @@ pomodoroChooseButton.addEventListener("click", choosePomodoroFuction);
 quickBreakChooseButton.addEventListener("click", chooseQuickBreakFunction);
 longBreakChooseButton.addEventListener("click", chooseLongBreakFunction);
 
-/* рендерим изначальный таймер
-по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
-либо сколько осталось вермени / либо сколько минут в режиме */
-if (pomodoro.timeLeft > 0) {
-  timerSeconds.textContent =
-    pomodoro.timeLeft % 60 >= 10
-      ? `${pomodoro.timeLeft % 60}`
-      : `0${pomodoro.timeLeft % 60}`;
-  timerMinutes.textContent =
-    Math.floor(pomodoro.timeLeft / 60) >= 10
-      ? `${Math.floor(pomodoro.timeLeft / 60)}`
-      : `0${Math.floor(pomodoro.timeLeft / 60)}`;
-} else {
-  timerMinutes.textContent =
-    pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
-  timerSeconds.textContent = "00";
-}
-
 //функция запуска/паузы таймера
 function timerStartFunction() {
   const chosenMode = modes.find((el) => el.isChosen);
-
   let time = chosenMode.timeLeft == 0 ? chosenMode.time : chosenMode.timeLeft;
   timerIsActive = !timerIsActive;
   clearInterval(interval);
@@ -246,10 +210,9 @@ function timerStartFunction() {
     }
   }, 10);
 }
-
 //функция для сброса таймера
 function timerResetFunction() {
-  timerIsActive = !timerIsActive;
+  timerIsActive = false;
   //рендер текста для кнопки start
   startButton.textContent = "start";
   resetButton.classList.add("none");
@@ -257,6 +220,9 @@ function timerResetFunction() {
   const chosenMode = modes.find((el) => el.isChosen);
   chosenMode.timeLeft = 0;
   localStorage.setItem(`${chosenMode.name}`, JSON.stringify({ ...chosenMode }));
+  if (chosenMode.name === "pomodoro") {
+    donePomodoroCount++;
+  }
   changeModeFunction();
 }
 //функция для рендера тудушки
@@ -378,7 +344,7 @@ function chooseQuickBreakFunction() {
     timerSeconds.textContent = "00";
   }
 }
-//функция для переключения на quickBreak
+//функция для переключения на longBreak
 function chooseLongBreakFunction() {
   timerIsActive = false;
   clearInterval(interval);
@@ -408,7 +374,6 @@ function chooseLongBreakFunction() {
       longBreak.minutes >= 10 ? longBreak.minutes : "0" + longBreak.minutes;
   }
 }
-
 //функция для автоматического переключения между режимами таймера
 function changeModeFunction() {
   const chosenModeIndex = modes.findIndex((mode) => mode.isChosen);
@@ -423,7 +388,6 @@ function changeModeFunction() {
       ) {
         chooseQuickBreakFunction();
       }
-
       break;
     case 1:
       choosePomodoroFuction();
@@ -435,4 +399,42 @@ function changeModeFunction() {
     default:
       break;
   }
+}
+//функция по рендеру изначального таймера
+function initialTimerRender() {
+  /* рендерим изначальный таймер
+по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
+либо сколько осталось вермени / либо сколько минут в режиме */
+  if (pomodoro.timeLeft > 0) {
+    timerSeconds.textContent =
+      pomodoro.timeLeft % 60 >= 10
+        ? `${pomodoro.timeLeft % 60}`
+        : `0${pomodoro.timeLeft % 60}`;
+    timerMinutes.textContent =
+      Math.floor(pomodoro.timeLeft / 60) >= 10
+        ? `${Math.floor(pomodoro.timeLeft / 60)}`
+        : `0${Math.floor(pomodoro.timeLeft / 60)}`;
+  } else {
+    timerMinutes.textContent =
+      pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
+    timerSeconds.textContent = "00";
+  }
+}
+
+/* рендерим изначальный таймер
+по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
+либо сколько осталось вермени / либо сколько минут в режиме */
+if (pomodoro.timeLeft > 0) {
+  timerSeconds.textContent =
+    pomodoro.timeLeft % 60 >= 10
+      ? `${pomodoro.timeLeft % 60}`
+      : `0${pomodoro.timeLeft % 60}`;
+  timerMinutes.textContent =
+    Math.floor(pomodoro.timeLeft / 60) >= 10
+      ? `${Math.floor(pomodoro.timeLeft / 60)}`
+      : `0${Math.floor(pomodoro.timeLeft / 60)}`;
+} else {
+  timerMinutes.textContent =
+    pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
+  timerSeconds.textContent = "00";
 }
