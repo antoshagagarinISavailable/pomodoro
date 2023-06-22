@@ -36,6 +36,31 @@ const longBreak = {
   },
 };
 
+//создаем класс для создания тудушек
+class Todo {
+  constructor(description, takesPomos) {
+    this.description = description;
+    this.takesPomos = takesPomos;
+    this.completed = false;
+  }
+
+  markComplete() {
+    this.completed = true;
+  }
+}
+
+//создаем масив тудушек
+const todos = JSON.parse(localStorage.getItem("todos"))
+  ? JSON.parse(localStorage.getItem("todos"))
+  : [];
+
+// рендерим тудушки если есть свои. иначе пусто
+if (todos.length > 0) {
+  todos.forEach((el) => {
+    renderTodo(el.description, el.takesPomos);
+  });
+}
+
 // все const по settings
 
 //html модалки setting
@@ -77,9 +102,10 @@ const newTodoTakesPomos = document.querySelector("#newTodoTakesPomos");
 
 //кнопки для tasks
 const addTodoButton = document.querySelector(".addTodoButton");
+const saveNewTodoButton = document.querySelector("#saveNewTodo");
 const cancelNewTodo = document.querySelector("#cancelNewTodo");
 
-//html модалки для создания task
+//нода модалки
 const createTodoModal = document.querySelector(".create-todo-modal");
 
 //слушатели по созданию тудушки
@@ -88,6 +114,12 @@ addTodoButton.addEventListener("click", () => {
 });
 cancelNewTodo.addEventListener("click", () => {
   createTodoModal.classList.toggle("none");
+  newTodoText.value = "";
+  newTodoTakesPomos.value = "1";
+});
+saveNewTodoButton.addEventListener("click", () => {
+  createTodoModal.classList.toggle("none");
+  addTodo();
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
 });
@@ -167,3 +199,60 @@ longBreakChooseButton.addEventListener("click", () => {
 timerMinutes.textContent = JSON.parse(localStorage.getItem("pomodoro"))
   ? JSON.parse(localStorage.getItem("pomodoro")).minutes
   : 25;
+
+//функция для рендера тудушки
+function renderTodo(description, takesPomos) {
+  const todoList = document.getElementById("todos-list");
+  const todoElement = document.createElement("li");
+  todoElement.innerHTML = `
+      <div class="todo-wrap">
+        <!-- <div class="svg-plug"> -->
+        <input type="checkbox" name="" id="" />
+        <!-- </div> -->
+        <p class="large-text">${description}</p>
+        <div class="todo-settings">
+          <div class="pomo-iterations">
+            <span class="pomo-iterations__actual actual"> 0 </span>
+            <span>/</span>
+            <span class="pomo-iterations__expected expected">
+              ${takesPomos}
+            </span>
+          </div>
+  
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            x="0px"
+            y="0px"
+            width="16"
+            height="16"
+            viewBox="0 0 30 30"
+            fill="#ccc"
+          >
+            <circle cx="12" cy="12" r="20" opacity="0" />
+            <circle cx="12" cy="2" r="2" opacity="0.8" />
+            <circle cx="12" cy="12" r="2" opacity="0.8" />
+            <circle cx="12" cy="22" r="2" opacity="0.8" />
+          </svg>
+        </div>
+      </div>
+      `;
+  todoList.appendChild(todoElement);
+}
+//функция для создания новой тудушки
+function addTodo() {
+  // получаем значения из формы
+  const description = document.getElementById("newTodoText").value;
+  const takesPomos = +document.getElementById("newTodoTakesPomos").value;
+
+  // создаём новую тудушку
+  const todo = new Todo(description, takesPomos);
+  console.log(todos);
+  console.log(todo);
+  // добавляем ее в наш массив в тудушек
+  todos.push(todo);
+  // добавляем ее в наш массив в тудушек в local storage
+  localStorage.setItem("todos", JSON.stringify([...todos]));
+
+  // добавляем её на страницу
+  renderTodo(todo.description, todo.takesPomos);
+}

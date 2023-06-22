@@ -72,6 +72,7 @@
 
   display: grid;
   grid-template-columns: max-content 1fr max-content;
+  align-items: center;
   gap: 5vw;
 
   border-bottom: 1px solid var(--bg-light);
@@ -83,6 +84,7 @@
 .todo-settings {
   display: grid;
   grid-template-columns: max-content max-content;
+  align-items: center;
   gap: 5vw;
 }
 /* timer block */
@@ -130,4 +132,11 @@ svg:hover {
 
 .none {
   display: none;
+}
+
+.container .todo-wrap input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+
+  background-color: var(--light);
 }
