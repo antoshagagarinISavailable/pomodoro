@@ -9,8 +9,15 @@
   <body class="dark">
     <div class="settings-modal none">
       <div class="settings-modal__header">
-        <button id="settingsCloseButton">close</button>
-        <button id="settingsSaveButton">save</button>
+        <button
+          id="settingsCloseButton"
+          aria-label="closes settings without saving if you changed something"
+        >
+          close
+        </button>
+        <button id="settingsSaveButton" aria-label="saves and closes settings">
+          save
+        </button>
       </div>
       <div class="settings-modal__main">
         <div class="settings-modal__main__unit-with-list">
@@ -72,7 +79,13 @@
     <div class="container">
       <header class="space-between-layout wrapper wrap-dark">
         <h1>logo</h1>
-        <button id="mainSettingsButton">settings</button>
+        <button
+          id="mainSettingsButton"
+          tabindex="1"
+          aria-label="open app settings"
+        >
+          settings
+        </button>
       </header>
       <main class="main-container">
         <div class="timer-wrapper wrapper wrap-dark">
@@ -81,17 +94,29 @@
               <button
                 id="pomodoroChooseButton"
                 class="timer-mode-list timer-mode-list_active"
+                tabindex="2"
+                aria-label="choose pomodoro mode"
               >
                 <span>pomodoro</span>
               </button>
             </li>
             <li>
-              <button id="quickBreakChooseButton" class="timer-mode-list">
+              <button
+                id="quickBreakChooseButton"
+                class="timer-mode-list"
+                tabindex="3"
+                aria-label="choose quick break mode"
+              >
                 <span>quick break</span>
               </button>
             </li>
             <li>
-              <button id="longBreakChooseButton" class="timer-mode-list">
+              <button
+                id="longBreakChooseButton"
+                class="timer-mode-list"
+                tabindex="4"
+                aria-label="choose long break mode"
+              >
                 <span>long break</span>
               </button>
             </li>
@@ -103,17 +128,26 @@
               <span class="timer-string__seconds">00</span>
             </p>
           </div>
-          <button id="startButton" class="start-button light">start</button>
-          <div class="current-todo-wrap">
-            <span>#2</span>
-            <span>todoname</span>
-          </div>
+          <button
+            id="startButton"
+            class="start-button light"
+            tabindex="5"
+            aria-label="start timer"
+          >
+            start
+          </button>
+          <p class="current-todo-wrap">what you're working on?</p>
         </div>
         <section class="todos-wrapper wrapper wrap-dark">
           <!-- модалка для создания todo -->
           <div class="create-todo-modal none">
             <div class="create-todo-modal__main">
-              <input id="newTodoText" type="text" placeholder="got new task?" />
+              <input
+                id="newTodoText"
+                type="text"
+                placeholder="got new task?"
+                aria-label="text the new task here"
+              />
               <div class="create-todo-modal__main__takesPomos">
                 <label for="newTodoTakesPomos">takes pomos</label>
                 <input
@@ -132,7 +166,11 @@
           </div>
           <div class="space-between-layout">
             <h3 class="todos-header large-text">Tasks</h3>
-            <button class="addTodoButton svg-plug svg">
+            <button
+              class="addTodoButton svg-plug svg"
+              aria-label="Add new taks"
+              tabindex="6"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 x="0px"
@@ -141,6 +179,7 @@
                 height="16"
                 stroke="#ccc"
                 role="img"
+                aria-label="icon plus"
               >
                 <path d="M 8 4 v 8 M 4 8 h 8"></path>
               </svg>

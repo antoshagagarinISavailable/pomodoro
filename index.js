@@ -59,6 +59,9 @@ if (todos.length > 0) {
   todos.forEach((el) => {
     renderTodo(el.description, el.takesPomos);
   });
+  //рендерим под цифрами таймера название текущей тудушки над которой работаем
+  document.querySelector(".current-todo-wrap").textContent =
+    todos[0].description;
 }
 
 // все const по settings
@@ -111,6 +114,7 @@ const createTodoModal = document.querySelector(".create-todo-modal");
 //слушатели по созданию тудушки
 addTodoButton.addEventListener("click", () => {
   createTodoModal.classList.toggle("none");
+  newTodoText.focus();
 });
 cancelNewTodo.addEventListener("click", () => {
   createTodoModal.classList.toggle("none");
@@ -255,4 +259,9 @@ function addTodo() {
 
   // добавляем её на страницу
   renderTodo(todo.description, todo.takesPomos);
+
+  if (todos.length == 1) {
+    document.querySelector(".current-todo-wrap").textContent =
+      todos[0].description;
+  }
 }
