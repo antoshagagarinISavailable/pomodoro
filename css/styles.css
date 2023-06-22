@@ -6,10 +6,10 @@
   --input-bg-light: #ffffff25;
 }
 
-button:focus,
+/* button:focus,
 input:focus {
   outline: 3px solid tomato;
-}
+} */
 input[type="text"] {
   padding: 2.5vw;
 }
@@ -114,7 +114,22 @@ input[type="text"] {
 .timer-string {
   font-size: 10vmax;
 }
+.startButtonContainer {
+  position: relative;
+
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 .start-button {
+  margin: 0 auto;
+  width: 56%;
+}
+.reset-button {
+  position: absolute;
+  top: 2.5vw;
+  right: 2.5vw;
+  padding: 0.2vw;
 }
 .current-todo-wrap {
   margin: 0 auto;

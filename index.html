@@ -79,11 +79,7 @@
     <div class="container">
       <header class="space-between-layout wrapper wrap-dark">
         <h1>logo</h1>
-        <button
-          id="mainSettingsButton"
-          tabindex="1"
-          aria-label="open app settings"
-        >
+        <button id="mainSettingsButton" aria-label="open app settings">
           settings
         </button>
       </header>
@@ -94,7 +90,6 @@
               <button
                 id="pomodoroChooseButton"
                 class="timer-mode-list timer-mode-list_active"
-                tabindex="2"
                 aria-label="choose pomodoro mode"
               >
                 <span>pomodoro</span>
@@ -104,7 +99,6 @@
               <button
                 id="quickBreakChooseButton"
                 class="timer-mode-list"
-                tabindex="3"
                 aria-label="choose quick break mode"
               >
                 <span>quick break</span>
@@ -114,7 +108,6 @@
               <button
                 id="longBreakChooseButton"
                 class="timer-mode-list"
-                tabindex="4"
                 aria-label="choose long break mode"
               >
                 <span>long break</span>
@@ -128,14 +121,22 @@
               <span class="timer-string__seconds">00</span>
             </p>
           </div>
-          <button
-            id="startButton"
-            class="start-button light"
-            tabindex="5"
-            aria-label="start timer"
-          >
-            start
-          </button>
+          <div class="startButtonContainer">
+            <button
+              id="startButton"
+              class="start-button light"
+              aria-label="start timer"
+            >
+              start
+            </button>
+            <button
+              id="resetButton"
+              class="reset-button light none"
+              aria-label="reset timer"
+            >
+              reset
+            </button>
+          </div>
           <p class="current-todo-wrap">what you're working on?</p>
         </div>
         <section class="todos-wrapper wrapper wrap-dark">
@@ -169,7 +170,6 @@
             <button
               class="addTodoButton svg-plug svg"
               aria-label="Add new taks"
-              tabindex="6"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

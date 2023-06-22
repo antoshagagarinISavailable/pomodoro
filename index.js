@@ -1,40 +1,43 @@
 //создаем объекты которые содержат информацию о режиме таймера
 const pomodoro = {
+  name: "pomodoro",
   minutes: JSON.parse(localStorage.getItem("pomodoro"))
-    ? JSON.parse(localStorage.getItem("pomodoro")).minutes
+    ? Number(JSON.parse(localStorage.getItem("pomodoro")).minutes)
     : 25,
   seconds: 0,
-  set setMinutes(value) {
-    this.minutes = +value;
-  },
+  isChosen: true,
+  timeLeft: JSON.parse(localStorage.getItem("pomodoro"))?.timeLeft || 0,
   get time() {
     return this.minutes * 60;
   },
 };
 const quickBreak = {
+  name: "quickBreak",
   minutes: JSON.parse(localStorage.getItem("quickBreak"))
     ? JSON.parse(localStorage.getItem("quickBreak")).minutes
     : 5,
   seconds: 0,
-  set setMinutes(value) {
-    this.minutes = +value;
-  },
+  isChosen: false,
+  timeLeft: JSON.parse(localStorage.getItem("quickBreak"))?.timeLeft || 0,
+
   get time() {
     return this.minutes * 60;
   },
 };
 const longBreak = {
+  name: "longBreak",
   minutes: JSON.parse(localStorage.getItem("longBreak"))
     ? JSON.parse(localStorage.getItem("longBreak")).minutes
     : 15,
   seconds: 0,
-  set setMinutes(value) {
-    this.minutes = +value;
-  },
+  isChosen: false,
+  timeLeft: JSON.parse(localStorage.getItem("longBreak"))?.timeLeft || 0,
   get time() {
     return this.minutes * 60;
   },
 };
+//создаем массив со всеми режимами
+const modes = [pomodoro, quickBreak, longBreak];
 
 //создаем класс для создания тудушек
 class Todo {
@@ -65,7 +68,8 @@ if (todos.length > 0) {
 }
 
 // все const по settings
-
+let longBreakInterval =
+  JSON.parse(localStorage.getItem("longBreakInterval")) || 3;
 //html модалки setting
 const settingsModal = document.querySelector(".settings-modal");
 
@@ -87,12 +91,30 @@ settingsCloseButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
 });
 settingsSaveButton.addEventListener("click", () => {
-  pomodoro.setMinutes = setPomodoro.value;
-  longBreak.setMinutes = setLongBreak.value;
-  quickBreak.setMinutes = setQuickBreak.value;
+  pomodoro.minutes = +setPomodoro.value;
+  longBreak.minutes = +setLongBreak.value;
+  quickBreak.minutes = +setQuickBreak.value;
   localStorage.setItem("pomodoro", JSON.stringify(pomodoro));
   localStorage.setItem("quickBreak", JSON.stringify(quickBreak));
   localStorage.setItem("longBreak", JSON.stringify(longBreak));
+
+  /* рендерим изначальный таймер
+по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
+либо сколько осталось вермени / либо сколько минут в режиме */
+  if (pomodoro.timeLeft > 0) {
+    timerSeconds.textContent =
+      pomodoro.timeLeft % 60 >= 10
+        ? `${pomodoro.timeLeft % 60}`
+        : `0${pomodoro.timeLeft % 60}`;
+    timerMinutes.textContent =
+      Math.floor(pomodoro.timeLeft / 60) >= 10
+        ? `${Math.floor(pomodoro.timeLeft / 60)}`
+        : `0${Math.floor(pomodoro.timeLeft / 60)}`;
+  } else {
+    timerMinutes.textContent =
+      pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
+    timerSeconds.textContent = "00";
+  }
 
   settingsModal.classList.toggle("none");
 });
@@ -145,18 +167,52 @@ const changeModeButtons = document.querySelectorAll(".timer-mode-list button");
 
 //кнопка start
 const startButton = document.querySelector("#startButton");
+const resetButton = document.querySelector("#resetButton");
 
 //глобальные переменные для таймера
 let interval;
 let timerIsActive = false;
 
-//функция запуска таймера
-const timerStartFunction = () => {
+//слушатель по нажатию кнопки start
+startButton.addEventListener("click", timerStartFunction);
+
+//слушатель по нажатию кнопки reset
+resetButton.addEventListener("click", timerResetFunction);
+
+//слушатели по нажатию кнопок выбора режима
+pomodoroChooseButton.addEventListener("click", choosePomodoroFuction);
+quickBreakChooseButton.addEventListener("click", chooseQuickBreakFunction);
+longBreakChooseButton.addEventListener("click", chooseLongBreakFunction);
+
+/* рендерим изначальный таймер
+по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
+либо сколько осталось вермени / либо сколько минут в режиме */
+if (pomodoro.timeLeft > 0) {
+  timerSeconds.textContent =
+    pomodoro.timeLeft % 60 >= 10
+      ? `${pomodoro.timeLeft % 60}`
+      : `0${pomodoro.timeLeft % 60}`;
+  timerMinutes.textContent =
+    Math.floor(pomodoro.timeLeft / 60) >= 10
+      ? `${Math.floor(pomodoro.timeLeft / 60)}`
+      : `0${Math.floor(pomodoro.timeLeft / 60)}`;
+} else {
+  timerMinutes.textContent =
+    pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
+  timerSeconds.textContent = "00";
+}
+
+//функция запуска/паузы таймера
+function timerStartFunction() {
+  const chosenMode = modes.find((el) => el.isChosen);
+
+  let time = chosenMode.timeLeft == 0 ? chosenMode.time : chosenMode.timeLeft;
   timerIsActive = !timerIsActive;
+  clearInterval(interval);
   //рендер текста для кнопки start
   startButton.textContent = timerIsActive ? "pause" : "start";
-  let time = +timerMinutes.textContent * 60 + +timerSeconds.textContent;
-  clearInterval(interval);
+  resetButton.classList.remove("none");
+
   interval = setInterval(() => {
     if (time > 0 && timerIsActive) {
       time--;
@@ -165,54 +221,36 @@ const timerStartFunction = () => {
       console.log(time);
       timerMinutes.textContent = minutes >= 10 ? `${minutes}` : `0${minutes}`;
       timerSeconds.textContent = seconds >= 10 ? `${seconds}` : `0${seconds}`;
+      chosenMode.timeLeft = time;
+      localStorage.setItem(
+        `${chosenMode.name}`,
+        JSON.stringify({ ...chosenMode })
+      );
     }
   }, 100);
-};
+}
 
-//слушатель по нажатию кнопки start
-startButton.addEventListener("click", timerStartFunction);
-
-//слушатели по нажатию кнопок выбора режима
-
-pomodoroChooseButton.addEventListener("click", () => {
-  longBreakChooseButton.classList.remove("timer-mode-list_active");
-  quickBreakChooseButton.classList.remove("timer-mode-list_active");
-  pomodoroChooseButton.classList.add("timer-mode-list_active");
-
-  time = timerMinutes.textContent =
-    pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
-});
-quickBreakChooseButton.addEventListener("click", () => {
-  longBreakChooseButton.classList.remove("timer-mode-list_active");
-  pomodoroChooseButton.classList.remove("timer-mode-list_active");
-  quickBreakChooseButton.classList.add("timer-mode-list_active");
-
-  timerMinutes.textContent =
-    quickBreak.minutes >= 10 ? quickBreak.minutes : "0" + quickBreak.minutes;
-});
-longBreakChooseButton.addEventListener("click", () => {
-  quickBreakChooseButton.classList.remove("timer-mode-list_active");
-  pomodoroChooseButton.classList.remove("timer-mode-list_active");
-  longBreakChooseButton.classList.add("timer-mode-list_active");
-
-  timerMinutes.textContent =
-    longBreak.minutes >= 10 ? longBreak.minutes : "0" + longBreak.minutes;
-});
-
-//по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
-timerMinutes.textContent = JSON.parse(localStorage.getItem("pomodoro"))
-  ? JSON.parse(localStorage.getItem("pomodoro")).minutes
-  : 25;
-
+//функция для сброса таймера
+function timerResetFunction() {
+  timerIsActive = !timerIsActive;
+  //рендер текста для кнопки start
+  startButton.textContent = "start";
+  resetButton.classList.add("none");
+  clearInterval(interval);
+  const chosenMode = modes.find((el) => el.isChosen);
+  chosenMode.timeLeft = 0;
+  localStorage.setItem(`${chosenMode.name}`, JSON.stringify({ ...chosenMode }));
+  changeModeFunction();
+}
 //функция для рендера тудушки
 function renderTodo(description, takesPomos) {
   const todoList = document.getElementById("todos-list");
   const todoElement = document.createElement("li");
   todoElement.innerHTML = `
       <div class="todo-wrap">
-        <!-- <div class="svg-plug"> -->
-        <input type="checkbox" name="" id="" />
-        <!-- </div> -->
+
+        <input type="checkbox" name="" id="" aria-label="shows if the task already done or not"/>
+
         <p class="large-text">${description}</p>
         <div class="todo-settings">
           <div class="pomo-iterations">
@@ -222,7 +260,7 @@ function renderTodo(description, takesPomos) {
               ${takesPomos}
             </span>
           </div>
-  
+
           <svg
             xmlns="http://www.w3.org/2000/svg"
             x="0px"
@@ -263,5 +301,112 @@ function addTodo() {
   if (todos.length == 1) {
     document.querySelector(".current-todo-wrap").textContent =
       todos[0].description;
+  }
+}
+//функция для переключения на pomodoro
+function choosePomodoroFuction() {
+  timerIsActive = false;
+  clearInterval(interval);
+  startButton.textContent = "start";
+  resetButton.classList.add("none");
+
+  longBreakChooseButton.classList.remove("timer-mode-list_active");
+  quickBreakChooseButton.classList.remove("timer-mode-list_active");
+  pomodoroChooseButton.classList.add("timer-mode-list_active");
+  pomodoro.isChosen = true;
+  quickBreak.isChosen = false;
+  longBreak.isChosen = false;
+
+  if (pomodoro.timeLeft > 0) {
+    timerSeconds.textContent =
+      pomodoro.timeLeft % 60 >= 10
+        ? `${pomodoro.timeLeft % 60}`
+        : `0${pomodoro.timeLeft % 60}`;
+    timerMinutes.textContent =
+      Math.floor(pomodoro.timeLeft / 60) >= 10
+        ? `${Math.floor(pomodoro.timeLeft / 60)}`
+        : `0${Math.floor(pomodoro.timeLeft / 60)}`;
+  } else {
+    timerMinutes.textContent =
+      pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
+    timerSeconds.textContent = "00";
+  }
+}
+//функция для переключения на quickBreak
+function chooseQuickBreakFunction() {
+  timerIsActive = false;
+  clearInterval(interval);
+  startButton.textContent = "start";
+  resetButton.classList.add("none");
+
+  longBreakChooseButton.classList.remove("timer-mode-list_active");
+  pomodoroChooseButton.classList.remove("timer-mode-list_active");
+  quickBreakChooseButton.classList.add("timer-mode-list_active");
+  pomodoro.isChosen = false;
+  quickBreak.isChosen = true;
+  longBreak.isChosen = false;
+
+  if (quickBreak.timeLeft > 0) {
+    timerSeconds.textContent =
+      quickBreak.timeLeft % 60 >= 10
+        ? `${quickBreak.timeLeft % 60}`
+        : `0${quickBreak.timeLeft % 60}`;
+    timerMinutes.textContent =
+      Math.floor(quickBreak.timeLeft / 60) >= 10
+        ? `${Math.floor(quickBreak.timeLeft / 60)}`
+        : `0${Math.floor(quickBreak.timeLeft / 60)}`;
+  } else {
+    timerMinutes.textContent =
+      quickBreak.minutes >= 10 ? quickBreak.minutes : "0" + quickBreak.minutes;
+    timerSeconds.textContent = "00";
+  }
+}
+//функция для переключения на quickBreak
+function chooseLongBreakFunction() {
+  timerIsActive = false;
+  clearInterval(interval);
+  startButton.textContent = "start";
+  resetButton.classList.add("none");
+
+  quickBreakChooseButton.classList.remove("timer-mode-list_active");
+  pomodoroChooseButton.classList.remove("timer-mode-list_active");
+  longBreakChooseButton.classList.add("timer-mode-list_active");
+  pomodoro.isChosen = false;
+  quickBreak.isChosen = false;
+  longBreak.isChosen = true;
+
+  if (longBreak.timeLeft > 0) {
+    timerSeconds.textContent =
+      longBreak.timeLeft % 60 >= 10
+        ? `${longBreak.timeLeft % 60}`
+        : `0${longBreak.timeLeft % 60}`;
+
+    timerMinutes.textContent =
+      Math.floor(longBreak.timeLeft / 60) >= 10
+        ? `${Math.floor(longBreak.timeLeft / 60)}`
+        : `0${Math.floor(longBreak.timeLeft / 60)}`;
+  } else {
+    timerSeconds.textContent = "00";
+    timerMinutes.textContent =
+      longBreak.minutes >= 10 ? longBreak.minutes : "0" + longBreak.minutes;
+  }
+}
+
+//функция для автоматического переключения между режимами таймера
+function changeModeFunction() {
+  const chosenModeIndex = modes.findIndex((mode) => mode.isChosen);
+  switch (chosenModeIndex) {
+    case 0:
+      chooseQuickBreakFunction();
+      break;
+    case 1:
+      chooseLongBreakFunction();
+      break;
+    case 2:
+      choosePomodoroFuction();
+      break;
+
+    default:
+      break;
   }
 }
