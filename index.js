@@ -68,6 +68,9 @@ if (todos.length > 0) {
 }
 
 // все const по settings
+
+let donePomodoroCount =
+  JSON.parse(localStorage.getItem("donePomodoroCount")) || 0;
 let longBreakInterval =
   JSON.parse(localStorage.getItem("longBreakInterval")) || 3;
 //html модалки setting
@@ -77,6 +80,7 @@ const settingsModal = document.querySelector(".settings-modal");
 const setPomodoro = document.querySelector("#setPomodoro");
 const setQuickBreak = document.querySelector("#setQuickBreak");
 const setLongBreak = document.querySelector("#setLongBreak");
+const setLongBreakInterval = document.querySelector("#setLongBreakInterval");
 
 //кнопки для settings
 const mainSettingsButton = document.querySelector("#mainSettingsButton");
@@ -94,9 +98,11 @@ settingsSaveButton.addEventListener("click", () => {
   pomodoro.minutes = +setPomodoro.value;
   longBreak.minutes = +setLongBreak.value;
   quickBreak.minutes = +setQuickBreak.value;
+  longBreakInterval = +setLongBreakInterval.value;
   localStorage.setItem("pomodoro", JSON.stringify(pomodoro));
   localStorage.setItem("quickBreak", JSON.stringify(quickBreak));
   localStorage.setItem("longBreak", JSON.stringify(longBreak));
+  localStorage.setItem("longBreakInterval", JSON.stringify(longBreakInterval));
 
   /* рендерим изначальный таймер
 по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
@@ -226,8 +232,19 @@ function timerStartFunction() {
         `${chosenMode.name}`,
         JSON.stringify({ ...chosenMode })
       );
+    } else if (chosenMode.name === "pomodoro" && time == 0) {
+      timerIsActive = false;
+      clearInterval(interval);
+      donePomodoroCount++;
+      localStorage.setItem(
+        "donePomodoroCount",
+        JSON.stringify(donePomodoroCount)
+      );
+      changeModeFunction();
+    } else if (chosenMode.name !== "pomodoro" && time == 0) {
+      changeModeFunction();
     }
-  }, 100);
+  }, 10);
 }
 
 //функция для сброса таймера
@@ -395,12 +412,18 @@ function chooseLongBreakFunction() {
 //функция для автоматического переключения между режимами таймера
 function changeModeFunction() {
   const chosenModeIndex = modes.findIndex((mode) => mode.isChosen);
+  console.log("активный индекс был: " + chosenModeIndex);
   switch (chosenModeIndex) {
     case 0:
+      if (donePomodoroCount > 1 && donePomodoroCount % longBreakInterval == 0) {
+        chooseLongBreakFunction();
+      } else {
+        chooseQuickBreakFunction();
+      }
       chooseQuickBreakFunction();
       break;
     case 1:
-      chooseLongBreakFunction();
+      choosePomodoroFuction();
       break;
     case 2:
       choosePomodoroFuction();

@@ -6,10 +6,9 @@
   --input-bg-light: #ffffff25;
 }
 
-/* button:focus,
 input:focus {
   outline: 3px solid tomato;
-} */
+}
 input[type="text"] {
   padding: 2.5vw;
 }
