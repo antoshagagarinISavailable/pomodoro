@@ -415,12 +415,15 @@ function changeModeFunction() {
   console.log("активный индекс был: " + chosenModeIndex);
   switch (chosenModeIndex) {
     case 0:
-      if (donePomodoroCount > 1 && donePomodoroCount % longBreakInterval == 0) {
+      if (donePomodoroCount > 1 && !(donePomodoroCount % longBreakInterval)) {
         chooseLongBreakFunction();
-      } else {
+      } else if (
+        donePomodoroCount > 1 &&
+        donePomodoroCount % longBreakInterval
+      ) {
         chooseQuickBreakFunction();
       }
-      chooseQuickBreakFunction();
+
       break;
     case 1:
       choosePomodoroFuction();
