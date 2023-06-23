@@ -624,16 +624,15 @@ function forceTodosRender() {
     buttonEmpty.classList.remove("none");
     todosHeader.classList.add("none");
     todosBody.classList.add("none");
-
-    buttonEmpty.addEventListener(
-      "click",
-      () => {
-        createTodoModal.classList.toggle("none");
-        newTodoText.focus();
-      },
-      { once: true }
-    );
   }
+  buttonEmpty.addEventListener(
+    "click",
+    () => {
+      createTodoModal.classList.remove("none");
+      newTodoText.focus();
+    },
+    { once: true }
+  );
 }
 
 initialTimerRender();
