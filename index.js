@@ -646,9 +646,15 @@ editTodoText.addEventListener("animationend", () => {
 editTakesPomos.addEventListener("animationend", () => {
   editTakesPomos.classList.remove("errAnim");
 });
+newTodoText.addEventListener("animationend", () => {
+  newTodoText.classList.remove("errAnim");
+});
+newTodoTakesPomos.addEventListener("animationend", () => {
+  editTakesPomos.classList.remove("errAnim");
+});
 editTodoText.addEventListener("keypress", (e) => {
   if (e.keyCode === 13 && editTodoText.value !== "") {
-    editTakesPomos.focus();
+    newTodoTakesPomos.focus();
   } else if (e.keyCode === 13 && editTodoText.value === "") {
     editTodoText.classList.add("errAnim");
   }
