@@ -166,7 +166,7 @@
               <button id="saveNewTodo">save</button>
             </div>
           </div>
-          <div class="space-between-layout">
+          <div class="space-between-layout" id="TodosHeaderContainer">
             <h3 class="todos-header large-text">Tasks</h3>
             <button
               class="addTodoButton svg-plug svg"
@@ -186,6 +186,12 @@
               </svg>
             </button>
           </div>
+
+          <!-- вариант хедера для tasks, если массив тудушек пока ещё пустой -->
+
+          <button id="buttonEmpty" class="none">add new task</button>
+          <!-- конец варианта хедера для tasks, если массив пустой-->
+
           <div class="todos-body">
             <div class="todos-list">
               <ul id="todos-list">

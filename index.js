@@ -57,16 +57,6 @@ const todos = JSON.parse(localStorage.getItem("todos"))
   ? JSON.parse(localStorage.getItem("todos"))
   : [];
 
-// рендерим тудушки если есть свои. иначе пусто
-if (todos.length > 0) {
-  todos.forEach((el) => {
-    renderTodo(el.description, el.takesPomos);
-  });
-  //рендерим под цифрами таймера название текущей тудушки над которой работаем
-  document.querySelector(".current-todo-wrap").textContent =
-    todos[0].description;
-}
-
 // все переменные по settings
 let donePomodoroCount =
   JSON.parse(localStorage.getItem("donePomodoroCount")) || 0;
@@ -119,6 +109,11 @@ const addTodoButton = document.querySelector(".addTodoButton");
 const saveNewTodoButton = document.querySelector("#saveNewTodo");
 const cancelNewTodo = document.querySelector("#cancelNewTodo");
 
+//ноды tasks
+const todosHeader = document.querySelector("#TodosHeaderContainer");
+const todosBody = document.querySelector(".todos-body");
+const buttonEmpty = document.querySelector("#buttonEmpty");
+
 //нода модалки
 const createTodoModal = document.querySelector(".create-todo-modal");
 
@@ -134,6 +129,14 @@ cancelNewTodo.addEventListener("click", () => {
 });
 saveNewTodoButton.addEventListener("click", () => {
   createTodoModal.classList.toggle("none");
+  if (
+    todosHeader.classList.contains("none") &&
+    todosBody.classList.contains("none")
+  ) {
+    todosHeader.classList.remove("none");
+    todosBody.classList.remove("none");
+  }
+  buttonEmpty.classList.add("none");
   addTodo();
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
@@ -437,4 +440,23 @@ if (pomodoro.timeLeft > 0) {
   timerMinutes.textContent =
     pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
   timerSeconds.textContent = "00";
+}
+
+// рендерим тудушки если есть свои. иначе пусто
+if (todos.length > 0) {
+  todos.forEach((el) => {
+    renderTodo(el.description, el.takesPomos);
+  });
+  //рендерим под цифрами таймера название текущей тудушки над которой работаем
+  document.querySelector(".current-todo-wrap").textContent =
+    todos[0].description;
+} else if (todos.length === 0) {
+  buttonEmpty.classList.remove("none");
+  todosHeader.classList.add("none");
+  todosBody.classList.add("none");
+  buttonEmpty.addEventListener("click", () => {
+    createTodoModal.classList.toggle("none");
+    newTodoText.focus();
+    // buttonEmpty.classList.add("none");
+  });
 }
