@@ -166,6 +166,31 @@
               <button id="saveNewTodo">save</button>
             </div>
           </div>
+          <!-- модалка по редактированию/удалению тудушки -->
+          <div class="edit-todo-modal none">
+            <div class="edit-todo-modal__main">
+              <input
+                id="editTodoText"
+                type="text"
+                aria-label="change current todo description"
+              />
+              <div class="edit-todo-modal__main__takesPomos">
+                <label for="newTodoTakesPomos">takes pomos</label>
+                <input
+                  id="editTakesPomos"
+                  type="number"
+                  min="0"
+                  step="1"
+                  value="1"
+                />
+              </div>
+            </div>
+            <div class="edit-todo-modal__footer">
+              <button id="cancelEditTodo">cancel</button>
+              <button id="deleteEditTodo">delete</button>
+              <button id="saveEditTodo">save</button>
+            </div>
+          </div>
           <div class="space-between-layout" id="TodosHeaderContainer">
             <h3 class="todos-header large-text">Tasks</h3>
             <button

@@ -38,7 +38,6 @@ const longBreak = {
 };
 //создаем массив со всеми режимами
 const modes = [pomodoro, quickBreak, longBreak];
-
 //создаем класс для создания тудушек
 class Todo {
   constructor(description, takesPomos) {
@@ -51,6 +50,8 @@ class Todo {
     this.completed = true;
   }
 }
+//создаем переменную для редактирования тудушки
+let bufferTodo;
 
 //создаем масив тудушек
 const todos = JSON.parse(localStorage.getItem("todos"))
@@ -106,9 +107,8 @@ const newTodoTakesPomos = document.querySelector("#newTodoTakesPomos");
 
 //кнопки для tasks
 const addTodoButton = document.querySelector(".addTodoButton");
-const saveNewTodoButton = document.querySelector("#saveNewTodo");
 const cancelNewTodo = document.querySelector("#cancelNewTodo");
-
+const saveNewTodoButton = document.querySelector("#saveNewTodo");
 //ноды tasks
 const todosHeader = document.querySelector("#TodosHeaderContainer");
 const todosBody = document.querySelector(".todos-body");
@@ -143,6 +143,61 @@ saveNewTodoButton.addEventListener("click", () => {
   addTodo();
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
+});
+
+// модалка редактирования тудушки
+
+// нода самой модалки редактирования тудушки
+const editTodoModal = document.querySelector(".edit-todo-modal");
+
+// инпут с тектом редактирования тудушки
+const editTodoText = document.querySelector("#editTodoText");
+const editTakesPomos = document.querySelector("#editTakesPomos");
+
+// кнопка сохранения изменений
+const saveEditTodoButton = document.querySelector("#saveEditTodo");
+// кнопка отмены изменений
+const cancelEditTodoButton = document.querySelector("#cancelEditTodo");
+// кнопка удаления
+const deleteEditTodoButton = document.querySelector("#deleteEditTodo");
+
+// слушатель для кнопки сохранения
+saveEditTodoButton.addEventListener("click", function () {
+  const parentNode = this.parentNode.parentNode;
+  const newDescription = parentNode.querySelector("#editTodoText").value;
+  const newTakesPomos = parentNode.querySelector("#editTakesPomos").value;
+  const index = todos.findIndex(
+    (el) => el.description === bufferTodo.description
+  );
+  if (index !== -1) {
+    todos[index].description = newDescription;
+    todos[index].takesPomos = newTakesPomos;
+  }
+  localStorage.setItem("todos", JSON.stringify([...todos]));
+  editTodoModal.classList.add("none");
+  todosHeader.classList.remove("none");
+  todosBody.classList.remove("none");
+  forceTodosRender();
+});
+// слушатель для кнопки отмены
+cancelEditTodoButton.addEventListener("click", () => {
+  editTodoModal.classList.add("none");
+  todosHeader.classList.remove("none");
+  todosBody.classList.remove("none");
+});
+// слушатель для кнопки удаления
+deleteEditTodoButton.addEventListener("click", () => {
+  const index = todos.findIndex(
+    (el) => el.description === bufferTodo.description
+  );
+  if (index !== -1) {
+    todos.splice(index, 1);
+  }
+  localStorage.setItem("todos", JSON.stringify([...todos]));
+  editTodoModal.classList.add("none");
+  todosHeader.classList.remove("none");
+  todosBody.classList.remove("none");
+  forceTodosRender();
 });
 
 // блок таймера
@@ -256,7 +311,30 @@ function renderTodo(description, takesPomos) {
       </div>
       `;
   todoList.appendChild(todoElement);
+  // выцепляем последний элемент из нодлиста
+  const editButton =
+    document.querySelectorAll(".todoEditButton")[
+      document.querySelectorAll(".todoEditButton").length - 1
+    ];
+  // чтобы навесить именно той тудушке, которая сейчас рендерится
+  editButton.addEventListener("click", editTodoOpen);
 }
+//функция открывашка редактирования/удаления существующей тудушки
+function editTodoOpen() {
+  editTodoModal.classList.remove("none");
+  todosHeader.classList.add("none");
+  todosBody.classList.add("none");
+  editTodoText.focus();
+  const parentNode = this.parentNode.parentNode;
+  const description = parentNode.querySelector("p").textContent;
+  const pomos = parentNode.querySelector(".expected").textContent.trim();
+  bufferTodo = new Todo(description, pomos);
+  console.log(bufferTodo);
+  editTodoText.value = description;
+  editTakesPomos.value = pomos;
+}
+// функция редактирования/удаления существующей тудушки
+function editTodo() {}
 //функция для создания новой тудушки
 function addTodo() {
   // получаем значения из формы
@@ -445,7 +523,13 @@ function initialTimerRender() {
   }
 }
 //функция по рендеру тудушек
-function initialTodosRender() {
+function forceTodosRender() {
+  //
+  const todoslist = document.querySelector("#todos-list");
+  while (todoslist.firstChild) {
+    todoslist.removeChild(todoslist.firstChild);
+  }
+
   // рендерим тудушки если есть свои. иначе пусто
   if (todos.length > 0) {
     todos.forEach((el) => {
@@ -466,4 +550,4 @@ function initialTodosRender() {
   }
 }
 initialTimerRender();
-initialTodosRender();
+forceTodosRender();
