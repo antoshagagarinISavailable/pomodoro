@@ -98,7 +98,7 @@ settingsSaveButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
 });
 
-// все const по tasks
+// все по тудушкам
 
 //tasks инпуты
 const newTodoText = document.querySelector("#newTodoText");
@@ -114,29 +114,32 @@ const todosHeader = document.querySelector("#TodosHeaderContainer");
 const todosBody = document.querySelector(".todos-body");
 const buttonEmpty = document.querySelector("#buttonEmpty");
 
-//нода модалки
+//нода самой модалки
 const createTodoModal = document.querySelector(".create-todo-modal");
 
-//слушатели по созданию тудушки
+//слушатель по открытию модалки для создания тудушки
 addTodoButton.addEventListener("click", () => {
   createTodoModal.classList.toggle("none");
+  todosHeader.classList.add("none");
+  todosBody.classList.add("none");
   newTodoText.focus();
 });
+//слушатель по клику на cancel (отмена создания новой тудушки)
 cancelNewTodo.addEventListener("click", () => {
+  if (document.getElementById("newTodoText").classList.contains("errAnim")) {
+    document.getElementById("newTodoText").classList.remove("errAnim");
+  }
   createTodoModal.classList.toggle("none");
+  todosHeader.classList.toggle("none");
+  todosBody.classList.toggle("none");
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
 });
+//слушатель по клику на save (проиходит создание новой тудушки)
 saveNewTodoButton.addEventListener("click", () => {
-  createTodoModal.classList.toggle("none");
-  if (
-    todosHeader.classList.contains("none") &&
-    todosBody.classList.contains("none")
-  ) {
-    todosHeader.classList.remove("none");
-    todosBody.classList.remove("none");
+  if (document.getElementById("newTodoText").classList.contains("errAnim")) {
+    document.getElementById("newTodoText").classList.remove("errAnim");
   }
-  buttonEmpty.classList.add("none");
   addTodo();
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
@@ -246,21 +249,9 @@ function renderTodo(description, takesPomos) {
               ${takesPomos}
             </span>
           </div>
+          <button class="todoEditButton">edit</button>
 
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            x="0px"
-            y="0px"
-            width="16"
-            height="16"
-            viewBox="0 0 30 30"
-            fill="#ccc"
-          >
-            <circle cx="12" cy="12" r="20" opacity="0" />
-            <circle cx="12" cy="2" r="2" opacity="0.8" />
-            <circle cx="12" cy="12" r="2" opacity="0.8" />
-            <circle cx="12" cy="22" r="2" opacity="0.8" />
-          </svg>
+          
         </div>
       </div>
       `;
@@ -271,22 +262,52 @@ function addTodo() {
   // получаем значения из формы
   const description = document.getElementById("newTodoText").value;
   const takesPomos = +document.getElementById("newTodoTakesPomos").value;
+  // получаем ноды форм
+  const descriptionNode = document.getElementById("newTodoText");
+  const takesPomosNode = +document.getElementById("newTodoTakesPomos");
 
-  // создаём новую тудушку
-  const todo = new Todo(description, takesPomos);
-  console.log(todos);
-  console.log(todo);
-  // добавляем ее в наш массив в тудушек
-  todos.push(todo);
-  // добавляем ее в наш массив в тудушек в local storage
-  localStorage.setItem("todos", JSON.stringify([...todos]));
+  // проверяем значения из формы на пустоту или неверные значения
+  if (description.trim() === "") {
+    descriptionNode.classList.add("errAnim");
+    descriptionNode.addEventListener("input", () => {
+      if (descriptionNode.classList.contains("errAnim")) {
+        descriptionNode.classList.remove("errAnim");
+      }
+    });
+  } else if (!takesPomos || takesPomos < 1) {
+    takesPomosNode.classList.add("errAnim");
+  } else if (description.trim() !== "" && takesPomos >= 1) {
+    if (descriptionNode.classList.contains("errAnim")) {
+      descriptionNode.classList.remove("errAnim");
+    }
+    // здесь логика по сокрытию/показу элементов
+    createTodoModal.classList.toggle("none");
+    if (todosHeader.classList.contains("none")) {
+      todosHeader.classList.remove("none");
+    }
+    if (todosBody.classList.contains("none")) {
+      todosBody.classList.remove("none");
+    }
+    buttonEmpty.classList.add("none");
 
-  // добавляем её на страницу
-  renderTodo(todo.description, todo.takesPomos);
+    // если всё гуд создаём новую тудушку
+    const todo = new Todo(description, takesPomos);
 
-  if (todos.length == 1) {
-    document.querySelector(".current-todo-wrap").textContent =
-      todos[0].description;
+    // добавляем ее в наш массив в тудушек
+    todos.push(todo);
+
+    // добавляем ее в наш массив в тудушек в local storage
+    localStorage.setItem("todos", JSON.stringify([...todos]));
+
+    // рендерим её на страницу
+    renderTodo(todo.description, todo.takesPomos);
+
+    //если это была первая тудушка созданная - тогда рендерим ее
+    // в current в таймере. Типа работать будем над ней
+    if (todos.length == 1) {
+      document.querySelector(".current-todo-wrap").textContent =
+        todos[0].description;
+    }
   }
 }
 //функция для переключения на pomodoro
@@ -423,40 +444,26 @@ function initialTimerRender() {
     timerSeconds.textContent = "00";
   }
 }
-
-/* рендерим изначальный таймер
-по дефолту при каждой перезагрузе ставим количество минут из режима pomodoro
-либо сколько осталось вермени / либо сколько минут в режиме */
-if (pomodoro.timeLeft > 0) {
-  timerSeconds.textContent =
-    pomodoro.timeLeft % 60 >= 10
-      ? `${pomodoro.timeLeft % 60}`
-      : `0${pomodoro.timeLeft % 60}`;
-  timerMinutes.textContent =
-    Math.floor(pomodoro.timeLeft / 60) >= 10
-      ? `${Math.floor(pomodoro.timeLeft / 60)}`
-      : `0${Math.floor(pomodoro.timeLeft / 60)}`;
-} else {
-  timerMinutes.textContent =
-    pomodoro.minutes >= 10 ? pomodoro.minutes : "0" + pomodoro.minutes;
-  timerSeconds.textContent = "00";
+//функция по рендеру тудушек
+function initialTodosRender() {
+  // рендерим тудушки если есть свои. иначе пусто
+  if (todos.length > 0) {
+    todos.forEach((el) => {
+      renderTodo(el.description, el.takesPomos);
+    });
+    //рендерим под цифрами таймера название текущей тудушки над которой работаем
+    document.querySelector(".current-todo-wrap").textContent =
+      todos[0].description;
+  } else if (todos.length === 0) {
+    buttonEmpty.classList.remove("none");
+    todosHeader.classList.add("none");
+    todosBody.classList.add("none");
+    buttonEmpty.addEventListener("click", () => {
+      createTodoModal.classList.toggle("none");
+      newTodoText.focus();
+      // buttonEmpty.classList.add("none");
+    });
+  }
 }
-
-// рендерим тудушки если есть свои. иначе пусто
-if (todos.length > 0) {
-  todos.forEach((el) => {
-    renderTodo(el.description, el.takesPomos);
-  });
-  //рендерим под цифрами таймера название текущей тудушки над которой работаем
-  document.querySelector(".current-todo-wrap").textContent =
-    todos[0].description;
-} else if (todos.length === 0) {
-  buttonEmpty.classList.remove("none");
-  todosHeader.classList.add("none");
-  todosBody.classList.add("none");
-  buttonEmpty.addEventListener("click", () => {
-    createTodoModal.classList.toggle("none");
-    newTodoText.focus();
-    // buttonEmpty.classList.add("none");
-  });
-}
+initialTimerRender();
+initialTodosRender();

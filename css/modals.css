@@ -64,9 +64,6 @@ input[type="number"] {
 .create-todo-modal {
   display: grid;
   gap: 5vw;
-
-  padding-bottom: 5vw;
-  border-bottom: 1px solid var(--input-bg-light);
 }
 
 .create-todo-modal__main {
