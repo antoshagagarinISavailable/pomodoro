@@ -57,7 +57,10 @@ let bufferTodo;
 const todos = JSON.parse(localStorage.getItem("todos"))
   ? JSON.parse(localStorage.getItem("todos"))
   : [];
-
+//создаем масив завершенных тудушек
+const todosDone = JSON.parse(localStorage.getItem("todosDone"))
+  ? JSON.parse(localStorage.getItem("todosDone"))
+  : [];
 // все переменные по settings
 let donePomodoroCount =
   JSON.parse(localStorage.getItem("donePomodoroCount")) || 0;
@@ -134,6 +137,14 @@ cancelNewTodo.addEventListener("click", () => {
   todosBody.classList.toggle("none");
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
+  buttonEmpty.addEventListener(
+    "click",
+    () => {
+      createTodoModal.classList.toggle("none");
+      newTodoText.focus();
+    },
+    { once: true }
+  );
 });
 //слушатель по клику на save (проиходит создание новой тудушки)
 saveNewTodoButton.addEventListener("click", () => {
@@ -162,23 +173,7 @@ const cancelEditTodoButton = document.querySelector("#cancelEditTodo");
 const deleteEditTodoButton = document.querySelector("#deleteEditTodo");
 
 // слушатель для кнопки сохранения
-saveEditTodoButton.addEventListener("click", function () {
-  const parentNode = this.parentNode.parentNode;
-  const newDescription = parentNode.querySelector("#editTodoText").value;
-  const newTakesPomos = parentNode.querySelector("#editTakesPomos").value;
-  const index = todos.findIndex(
-    (el) => el.description === bufferTodo.description
-  );
-  if (index !== -1) {
-    todos[index].description = newDescription;
-    todos[index].takesPomos = newTakesPomos;
-  }
-  localStorage.setItem("todos", JSON.stringify([...todos]));
-  editTodoModal.classList.add("none");
-  todosHeader.classList.remove("none");
-  todosBody.classList.remove("none");
-  forceTodosRender();
-});
+saveEditTodoButton.addEventListener("click", saveEditTodoFunction);
 // слушатель для кнопки отмены
 cancelEditTodoButton.addEventListener("click", () => {
   editTodoModal.classList.add("none");
@@ -233,7 +228,28 @@ resetButton.addEventListener("click", timerResetFunction);
 pomodoroChooseButton.addEventListener("click", choosePomodoroFuction);
 quickBreakChooseButton.addEventListener("click", chooseQuickBreakFunction);
 longBreakChooseButton.addEventListener("click", chooseLongBreakFunction);
-
+//функция по сохранению изменений в тудушке
+function saveEditTodoFunction() {
+  const parentNode = this.parentNode.parentNode;
+  const newDescription = parentNode.querySelector("#editTodoText").value;
+  const newTakesPomos = parentNode.querySelector("#editTakesPomos").value;
+  const index = todos.findIndex(
+    (el) => el.description === bufferTodo.description
+  );
+  if (index !== -1 && newDescription !== "" && newTakesPomos > 0) {
+    todos[index].description = newDescription;
+    todos[index].takesPomos = newTakesPomos;
+    localStorage.setItem("todos", JSON.stringify([...todos]));
+    editTodoModal.classList.add("none");
+    todosHeader.classList.remove("none");
+    todosBody.classList.remove("none");
+    forceTodosRender();
+  } else if (newDescription === "") {
+    editTodoText.classList.add("errAnim");
+  } else if (newTakesPomos < 1 || !newTakesPomos) {
+    editTakesPomos.classList.add("errAnim");
+  }
+}
 //функция запуска/паузы таймера
 function timerStartFunction() {
   const chosenMode = modes.find((el) => el.isChosen);
@@ -249,7 +265,6 @@ function timerStartFunction() {
       time--;
       let minutes = Math.floor(time / 60);
       let seconds = time % 60;
-      console.log(time);
       timerMinutes.textContent = minutes >= 10 ? `${minutes}` : `0${minutes}`;
       timerSeconds.textContent = seconds >= 10 ? `${seconds}` : `0${seconds}`;
       chosenMode.timeLeft = time;
@@ -269,7 +284,7 @@ function timerStartFunction() {
     } else if (chosenMode.name !== "pomodoro" && time == 0) {
       changeModeFunction();
     }
-  }, 10);
+  }, 1000);
 }
 //функция для сброса таймера
 function timerResetFunction() {
@@ -286,6 +301,39 @@ function timerResetFunction() {
   }
   changeModeFunction();
 }
+//функция для рендера завершенной тудушки
+function renderTodoDone(description) {
+  const todoDoneList = document.getElementById("todosDone-list");
+  const todoDoneElement = document.createElement("li");
+  todoDoneElement.innerHTML = `
+  <li>
+  <div class="todoDone-wrap">
+    <p class="large-text">${description}</p>
+    <button class="deteleDoneTodo">delete</button>
+  </div>
+</li>
+  `;
+  todoDoneList.appendChild(todoDoneElement);
+  // выцепляем последний элемент из нодлиста
+  const deleteTodoDoneButton =
+    document.querySelectorAll(".deteleDoneTodo")[
+      document.querySelectorAll(".deteleDoneTodo").length - 1
+    ];
+
+  // чтобы навесить именно той тудушке, которая сейчас рендерится
+  deleteTodoDoneButton.addEventListener("click", deleteTodoDoneFunction);
+}
+//функция для удаления завершенной тудушки
+function deleteTodoDoneFunction() {
+  const text = this.parentNode.querySelector("p").textContent;
+  const index = todosDone.findIndex((el) => el.description === text);
+  if (index !== -1) {
+    todosDone.splice(index, 1);
+    localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
+  }
+
+  forceTodosRender();
+}
 //функция для рендера тудушки
 function renderTodo(description, takesPomos) {
   const todoList = document.getElementById("todos-list");
@@ -293,7 +341,7 @@ function renderTodo(description, takesPomos) {
   todoElement.innerHTML = `
       <div class="todo-wrap">
 
-        <input type="checkbox" name="" id="" aria-label="shows if the task already done or not"/>
+        <input type="checkbox" class="processingState" aria-label="shows if the task already done or not"/>
 
         <p class="large-text">${description}</p>
         <div class="todo-settings">
@@ -310,14 +358,35 @@ function renderTodo(description, takesPomos) {
         </div>
       </div>
       `;
+
   todoList.appendChild(todoElement);
   // выцепляем последний элемент из нодлиста
   const editButton =
     document.querySelectorAll(".todoEditButton")[
       document.querySelectorAll(".todoEditButton").length - 1
     ];
+  const checkBox =
+    document.querySelectorAll(".processingState")[
+      document.querySelectorAll(".processingState").length - 1
+    ];
+
   // чтобы навесить именно той тудушке, которая сейчас рендерится
   editButton.addEventListener("click", editTodoOpen);
+  checkBox.addEventListener("change", todoManualChangeState);
+}
+//функция для ручного выполнения тудушки по клику на чекбокс
+function todoManualChangeState() {
+  const text = this.parentNode.querySelector("p").textContent;
+  const index = todos.findIndex((el) => el.description === text);
+  if (index !== -1) {
+    todos[index].completed = true;
+    todosDone.push(todos[index]);
+    todos.splice(index, 1);
+    localStorage.setItem("todos", JSON.stringify([...todos]));
+    localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
+  }
+
+  forceTodosRender();
 }
 //функция открывашка редактирования/удаления существующей тудушки
 function editTodoOpen() {
@@ -329,7 +398,6 @@ function editTodoOpen() {
   const description = parentNode.querySelector("p").textContent;
   const pomos = parentNode.querySelector(".expected").textContent.trim();
   bufferTodo = new Todo(description, pomos);
-  console.log(bufferTodo);
   editTodoText.value = description;
   editTakesPomos.value = pomos;
 }
@@ -342,7 +410,7 @@ function addTodo() {
   const takesPomos = +document.getElementById("newTodoTakesPomos").value;
   // получаем ноды форм
   const descriptionNode = document.getElementById("newTodoText");
-  const takesPomosNode = +document.getElementById("newTodoTakesPomos");
+  const takesPomosNode = document.getElementById("newTodoTakesPomos");
 
   // проверяем значения из формы на пустоту или неверные значения
   if (description.trim() === "") {
@@ -386,6 +454,9 @@ function addTodo() {
       document.querySelector(".current-todo-wrap").textContent =
         todos[0].description;
     }
+    //обнуляем инпуты
+    document.getElementById("newTodoText").value = "";
+    document.getElementById("newTodoTakesPomos").value = 1;
   }
 }
 //функция для переключения на pomodoro
@@ -479,7 +550,6 @@ function chooseLongBreakFunction() {
 //функция для автоматического переключения между режимами таймера
 function changeModeFunction() {
   const chosenModeIndex = modes.findIndex((mode) => mode.isChosen);
-  console.log("активный индекс был: " + chosenModeIndex);
   switch (chosenModeIndex) {
     case 0:
       if (donePomodoroCount > 1 && !(donePomodoroCount % longBreakInterval)) {
@@ -526,28 +596,81 @@ function initialTimerRender() {
 function forceTodosRender() {
   //
   const todoslist = document.querySelector("#todos-list");
+  const todosDonelist = document.querySelector("#todosDone-list");
+
   while (todoslist.firstChild) {
     todoslist.removeChild(todoslist.firstChild);
   }
+  while (todosDonelist.firstChild) {
+    todosDonelist.removeChild(todosDonelist.firstChild);
+  }
 
   // рендерим тудушки если есть свои. иначе пусто
+  if (todosDone.length > 0) {
+    todosDone.forEach((el) => {
+      renderTodoDone(el.description, el.takesPomos);
+    });
+  }
   if (todos.length > 0) {
     todos.forEach((el) => {
       renderTodo(el.description, el.takesPomos);
     });
+
     //рендерим под цифрами таймера название текущей тудушки над которой работаем
     document.querySelector(".current-todo-wrap").textContent =
       todos[0].description;
-  } else if (todos.length === 0) {
+  }
+  if (todos.length === 0) {
     buttonEmpty.classList.remove("none");
     todosHeader.classList.add("none");
     todosBody.classList.add("none");
-    buttonEmpty.addEventListener("click", () => {
-      createTodoModal.classList.toggle("none");
-      newTodoText.focus();
-      // buttonEmpty.classList.add("none");
-    });
+
+    buttonEmpty.addEventListener(
+      "click",
+      () => {
+        createTodoModal.classList.toggle("none");
+        newTodoText.focus();
+      },
+      { once: true }
+    );
   }
 }
+
 initialTimerRender();
 forceTodosRender();
+
+// слушатели для того чтобы можно было создавать / редактировать тудушки по нажатию enter
+editTodoText.addEventListener("animationend", () => {
+  editTodoText.classList.remove("errAnim");
+});
+editTakesPomos.addEventListener("animationend", () => {
+  editTakesPomos.classList.remove("errAnim");
+});
+editTodoText.addEventListener("keypress", (e) => {
+  if (e.keyCode === 13 && editTodoText.value !== "") {
+    editTakesPomos.focus();
+  } else if (e.keyCode === 13 && editTodoText.value === "") {
+    editTodoText.classList.add("errAnim");
+  }
+});
+editTakesPomos.addEventListener("keypress", (e) => {
+  if (e.keyCode === 13 && editTakesPomos.value !== 0) {
+    saveEditTodoFunction.call(saveEditTodoButton);
+  } else if (e.keyCode === 13 && editTakesPomos.value === "") {
+    editTakesPomos.classList.add("errAnim");
+  }
+});
+newTodoText.addEventListener("keypress", (e) => {
+  if (e.keyCode === 13 && newTodoText.value !== "") {
+    newTodoTakesPomos.focus();
+  } else if (e.keyCode === 13 && newTodoText.value === "") {
+    newTodoText.classList.add("errAnim");
+  }
+});
+newTodoTakesPomos.addEventListener("keypress", (e) => {
+  if (e.keyCode === 13 && newTodoTakesPomos.value !== 0) {
+    addTodo();
+  } else if (e.keyCode === 13 && newTodoTakesPomos.value === "") {
+    newTodoTakesPomos.classList.add("errAnim");
+  }
+});

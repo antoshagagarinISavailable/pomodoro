@@ -5,11 +5,21 @@
   --bg-dark: #00000010;
   --input-bg-light: #ffffff25;
 }
+input:focus {
+  outline: 3px solid tomato;
+}
+input[type="text"] {
+  padding: 2.5vw;
+}
+.errAnim:focus {
+  outline: 3px solid red;
+}
 .errAnim {
   transition: all 200ms ease;
   transform: translateX(0);
-  outline: 2px solid tomato;
-  animation: errAnim 100ms ease 3 forwards;
+  outline: 3px solid red;
+
+  animation: errAnim 80ms ease 7 forwards;
 }
 @keyframes errAnim {
   0% {
@@ -27,13 +37,6 @@
   100% {
     transform: translateX(0px);
   }
-}
-
-input:focus {
-  outline: 3px solid tomato;
-}
-input[type="text"] {
-  padding: 2.5vw;
 }
 
 /* themes */
@@ -107,9 +110,23 @@ input[type="text"] {
 
   border-bottom: 1px solid var(--bg-light);
 }
-.todos-wrapper {
+.todoDone-wrap {
+  padding: 5vmax 0;
+
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  align-items: center;
+  gap: 5vw;
+
+  border-bottom: 1px solid var(--bg-light);
+}
+.todos-wrapper,
+.todosDone-wrapper {
   display: grid;
   gap: 5vh;
+}
+.todosDone-wrapper {
+  min-height: 25vh;
 }
 .todo-settings {
   display: grid;
