@@ -83,14 +83,25 @@ const settingsSaveButton = document.querySelector("#settingsSaveButton");
 //слушатели по settings
 mainSettingsButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
+  if (timerIsActive) {
+    timerIsActive = false;
+    clearInterval(interval);
+    //меняем кнопку pause на start
+    startButton.textContent = "start";
+    //прячем reset
+    resetButton.classList.add("none");
+  }
 });
 settingsCloseButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
 });
 settingsSaveButton.addEventListener("click", () => {
   pomodoro.minutes = +setPomodoro.value;
+  pomodoro.timeLeft = +setPomodoro.value * 60;
   longBreak.minutes = +setLongBreak.value;
+  longBreak.timeLeft = +setLongBreak.value * 60;
   quickBreak.minutes = +setQuickBreak.value;
+  quickBreak.timeLeft = +setQuickBreak.value * 60;
   longBreakInterval = +setLongBreakInterval.value;
   localStorage.setItem("pomodoro", JSON.stringify(pomodoro));
   localStorage.setItem("quickBreak", JSON.stringify(quickBreak));
@@ -552,10 +563,10 @@ function changeModeFunction() {
   const chosenModeIndex = modes.findIndex((mode) => mode.isChosen);
   switch (chosenModeIndex) {
     case 0:
-      if (donePomodoroCount > 1 && !(donePomodoroCount % longBreakInterval)) {
+      if (donePomodoroCount > 0 && !(donePomodoroCount % longBreakInterval)) {
         chooseLongBreakFunction();
       } else if (
-        donePomodoroCount > 1 &&
+        donePomodoroCount > 0 &&
         donePomodoroCount % longBreakInterval
       ) {
         chooseQuickBreakFunction();
