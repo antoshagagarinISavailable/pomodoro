@@ -8,7 +8,7 @@
   </head>
   <body class="dark">
     <!-- модалка для настроек -->
-    <div class="settings-modal none">
+    <div class="settings-modal dark none">
       <div class="settings-modal__header">
         <button
           id="settingsCloseButton"
@@ -22,7 +22,7 @@
       </div>
       <div class="settings-modal__main">
         <div class="settings-modal__main__unit-with-list">
-          <p class="x-large-text">time (minutes)</p>
+          <p class="x-large-text">time (minutes):</p>
           <ul>
             <li>
               <label class="large-text" for="setPomodoro">pomodoro</label>
@@ -61,7 +61,7 @@
         </div>
         <div class="settings-modal__main__unit">
           <label class="x-large-text" for="setLongBreakInterval"
-            >long break interval</label
+            >long break interval:</label
           >
           <input
             id="setLongBreakInterval"
@@ -71,6 +71,12 @@
             class=""
             value="3"
           />
+        </div>
+        <div class="settings-modal__main__unit">
+          <label class="x-large-text" for="setLongBreakInterval"
+            >dark mode:</label
+          >
+          <input id="setDarkMode" type="checkbox" checked />
         </div>
       </div>
       <!-- <div class="settings-modal__footer">
@@ -202,13 +208,17 @@
                 xmlns="http://www.w3.org/2000/svg"
                 x="0px"
                 y="0px"
-                width="16"
-                height="16"
-                stroke="#ccc"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                tabindex="0"
                 role="img"
-                aria-label="icon plus"
+                aria-label="add new task"
+                fill="#8db600"
               >
-                <path d="M 8 4 v 8 M 4 8 h 8"></path>
+                <path
+                  d="M 12 2 C 6.4889971 2 2 6.4889971 2 12 C 2 17.511003 6.4889971 22 12 22 C 17.511003 22 22 17.511003 22 12 C 22 6.4889971 17.511003 2 12 2 z M 12 4 C 16.430123 4 20 7.5698774 20 12 C 20 16.430123 16.430123 20 12 20 C 7.5698774 20 4 16.430123 4 12 C 4 7.5698774 7.5698774 4 12 4 z M 11 7 L 11 11 L 7 11 L 7 13 L 11 13 L 11 17 L 13 17 L 13 13 L 17 13 L 17 11 L 13 11 L 13 7 L 11 7 z"
+                ></path>
               </svg>
             </button>
           </div>
@@ -255,9 +265,26 @@
             </div>
           </div>
         </section>
-        <section class="todosDone-wrapper wrap-dark wrapper">
+        <section class="todosDone-wrapper wrap-dark wrapper none">
           <div class="space-between-layout" id="TodosDoneHeaderContainer">
-            <h3 class="todosDone-header large-text">Done</h3>
+            <h3 class="todosDone-header large-text">Already done pomodoros</h3>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              id="clearAllDoneTodos"
+              x="0px"
+              y="0px"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="tomato"
+              role="button"
+              aria-label="clear all done tasks"
+            >
+              <path
+                d="M 10 2 L 9 3 L 4 3 L 4 5 L 5 5 L 5 20 C 5 20.522222 5.1913289 21.05461 5.5683594 21.431641 C 5.9453899 21.808671 6.4777778 22 7 22 L 17 22 C 17.522222 22 18.05461 21.808671 18.431641 21.431641 C 18.808671 21.05461 19 20.522222 19 20 L 19 5 L 20 5 L 20 3 L 15 3 L 14 2 L 10 2 z M 7 5 L 17 5 L 17 20 L 7 20 L 7 5 z M 9 7 L 9 18 L 11 18 L 11 7 L 9 7 z M 13 7 L 13 18 L 15 18 L 15 7 L 13 7 z"
+              ></path>
+            </svg>
           </div>
           <div class="todosDone-body">
             <div class="todosDone-list">

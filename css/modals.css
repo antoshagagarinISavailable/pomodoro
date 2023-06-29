@@ -12,8 +12,6 @@ input[type="number"] {
 }
 
 .settings-modal {
-  background-color: black;
-
   padding: 5vw;
 
   position: fixed;

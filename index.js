@@ -77,9 +77,11 @@ mainSettingsButton.addEventListener("click", () => {
     resetButton.classList.add("none");
   }
 });
+// слушатель для кнопки cancel в settings
 settingsCloseButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
 });
+// слушатель для кнопки save в settings
 settingsSaveButton.addEventListener("click", () => {
   pomodoro.minutes =
     +setPomodoro.value && +setPomodoro.value > 0 ? +setPomodoro.value : 25;
@@ -344,6 +346,13 @@ function deleteTodoDoneFunction() {
     todosDone.splice(index, 1);
     localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
   }
+  if (todosDone.length === 0) {
+    if (
+      !document.querySelector(".todosDone-wrapper").classList.contains("none")
+    ) {
+      document.querySelector(".todosDone-wrapper").classList.add("none");
+    }
+  }
 
   forceTodosRender();
 }
@@ -552,12 +561,18 @@ function forceTodosRender() {
     todosDonelist.removeChild(todosDonelist.firstChild);
   }
 
-  // рендерим тудушки если есть свои. иначе пусто
+  // рендерим сделанные тудушки, если есть
   if (todosDone.length > 0) {
     todosDone.forEach((el) => {
       renderTodoDone(el.description, el.takesPomos);
     });
+    if (
+      document.querySelector(".todosDone-wrapper").classList.contains("none")
+    ) {
+      document.querySelector(".todosDone-wrapper").classList.remove("none");
+    }
   }
+  // рендерим тудушки, если есть
   if (todos.length > 0) {
     todos.forEach((el) => {
       renderTodo(el.description, el.takesPomos);
@@ -571,6 +586,8 @@ function forceTodosRender() {
     buttonEmpty.classList.remove("none");
     todosHeader.classList.add("none");
     todosBody.classList.add("none");
+    document.querySelector(".current-todo-wrap").textContent =
+      "what are you working on?";
   }
   buttonEmpty.addEventListener(
     "click",
@@ -581,16 +598,58 @@ function forceTodosRender() {
     { once: true }
   );
 }
+//функция переключения dark mode / light mode
+function darkModeSwitch(isChecked) {
+  if (!isChecked) {
+    document.body.classList.remove("dark");
+    document.body.classList.add("light");
+    document.querySelector(".settings-modal").classList.remove("dark");
+    document.querySelector(".settings-modal").classList.add("light");
+  } else if (isChecked) {
+    document.body.classList.remove("light");
+    document.body.classList.add("dark");
+    document.querySelector(".settings-modal").classList.remove("light");
+    document.querySelector(".settings-modal").classList.add("dark");
+  }
+  if (!localStorage.getItem("darkMode")) {
+    localStorage.setItem("darkMode", JSON.stringify(isChecked));
+  }
+  if (JSON.parse(localStorage.getItem("darkMode")) !== isChecked) {
+    localStorage.setItem("darkMode", JSON.stringify(isChecked));
+  }
+}
+// ЭТО НУЖНО ОБЪЕДИНИТЬ В ОДНУ ФУНКЦИЮ НЕ ЗАБЫТЬ
 //певроначальный рендер при каждой загрузке страницы
 if (modes.findIndex((el) => el.isChosen) > 0) {
   timerDigitsRender(modes[modes.findIndex((el) => el.isChosen)]);
 } else {
   timerDigitsRender(pomodoro);
 }
+//певроначальный рендер dark mode
+if (localStorage.getItem("darkMode")) {
+  darkModeSwitch(JSON.parse(localStorage.getItem("darkMode")));
+  document.querySelector("#setDarkMode").checked = JSON.parse(
+    localStorage.getItem("darkMode")
+  );
+}
+if (!localStorage.getItem("darkMode")) {
+  localStorage.setItem("darkMode", "true");
+}
 
 forceTodosRender();
 
-// слушатели для того чтобы можно было создавать / редактировать тудушки по нажатию enter
+// слушатель для переключения dark mode
+document.querySelector("#setDarkMode").addEventListener("change", function () {
+  darkModeSwitch(this.checked);
+});
+// слушатель для удаления всех сделанных тудушек
+document.querySelector("#clearAllDoneTodos").addEventListener("click", () => {
+  todosDone.length = 0;
+  localStorage.setItem("todosDone", JSON.stringify(todosDone));
+  document.querySelector(".todosDone-wrapper").classList.add("none");
+});
+// слушатели для того чтобы можно было создавать
+// редактировать(save) тудушки по нажатию enter
 editTodoText.addEventListener("animationend", () => {
   editTodoText.classList.remove("errAnim");
 });

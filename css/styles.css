@@ -38,15 +38,37 @@ input[type="text"] {
     transform: translateX(0px);
   }
 }
+/* медиа запросы для ховеров чтобы на мобилке не ховер не оставался после нажатия*/
+@media (hover: hover) {
+  #clearAllDoneTodos:hover {
+    fill: red;
+  }
+  svg:hover {
+    scale: 1.1;
+    transition: all 200ms ease;
+    cursor: pointer;
+  }
+}
+@media (hover: none) {
+  #clearAllDoneTodos:active {
+    fill: red;
+  }
+  svg:active {
+    scale: 1.3;
+    transition: all 200ms ease;
+  }
+}
 
 /* themes */
 .dark {
   background-color: var(--dark);
   color: var(--light);
+  transition: all 300ms ease;
 }
 .light {
   background-color: var(--light);
   color: var(--dark);
+  transition: all 300ms ease;
 }
 .wrap-dark {
   background-color: var(--bg-light);
@@ -71,10 +93,16 @@ input[type="text"] {
   font-size: x-large;
 }
 .start-button {
+  margin: 0 auto;
+  padding: 0.5em 1em;
+
+  width: 56%;
+
   font-weight: bold;
   font-size: xx-large;
-
-  padding: 0.5em 1em;
+}
+h3 {
+  font-weight: normal;
 }
 
 /* Layouts */
@@ -160,10 +188,7 @@ input[type="text"] {
   display: flex;
   justify-content: center;
 }
-.start-button {
-  margin: 0 auto;
-  width: 56%;
-}
+
 .reset-button {
   position: absolute;
   top: 2.5vw;
@@ -194,11 +219,6 @@ input[type="text"] {
 }
 .timer-mode-list_active {
   border-bottom: 2px solid tomato;
-}
-
-svg:hover {
-  scale: 1.5;
-  transition: all 200ms ease;
 }
 
 .none {
