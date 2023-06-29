@@ -81,13 +81,23 @@ settingsCloseButton.addEventListener("click", () => {
   settingsModal.classList.toggle("none");
 });
 settingsSaveButton.addEventListener("click", () => {
-  pomodoro.minutes = +setPomodoro.value;
-  pomodoro.timeLeft = +setPomodoro.value * 60;
-  longBreak.minutes = +setLongBreak.value;
-  longBreak.timeLeft = +setLongBreak.value * 60;
-  quickBreak.minutes = +setQuickBreak.value;
-  quickBreak.timeLeft = +setQuickBreak.value * 60;
-  longBreakInterval = +setLongBreakInterval.value;
+  pomodoro.minutes =
+    +setPomodoro.value && +setPomodoro.value > 0 ? +setPomodoro.value : 25;
+  pomodoro.timeLeft =
+    +setPomodoro.value * 60 > 0 ? +setPomodoro.value * 60 : 25 * 60;
+  longBreak.minutes =
+    +longBreak.value && +longBreak.value > 0 ? +longBreak.value : 15;
+  longBreak.timeLeft =
+    +longBreak.value * 60 > 0 ? +longBreak.value * 60 : 15 * 60;
+  quickBreak.minutes =
+    +quickBreak.value && +quickBreak.value > 0 ? +quickBreak.value : 5;
+  quickBreak.timeLeft =
+    +quickBreak.value * 60 > 0 ? +quickBreak.value * 60 : 5 * 60;
+
+  longBreakInterval =
+    +setLongBreakInterval.value && +setLongBreakInterval.value > 0
+      ? +setLongBreakInterval.value
+      : 3;
   donePomodoroCount = 0;
   localStorage.setItem("pomodoro", JSON.stringify(pomodoro));
   localStorage.setItem("quickBreak", JSON.stringify(quickBreak));
