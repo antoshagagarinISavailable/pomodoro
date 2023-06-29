@@ -82,7 +82,8 @@ input[type="number"] {
 .dark button {
   color: #999;
 }
-.dark .start-button {
+.dark .start-button,
+.dark .reset-button {
   background-color: var(--light);
   color: #000;
 }
@@ -107,7 +108,9 @@ input[type="number"] {
 .light button {
   color: #444;
 }
-.light .start-button {
+.light .start-button,
+.light .reset-button {
+  background-color: var(--bg-dark);
   color: #222;
 }
 .light .todo-wrap,
@@ -145,6 +148,7 @@ input[type="number"] {
   font-weight: normal;
   font-size: xx-large;
 }
+
 h3,
 button {
   font-weight: normal;
@@ -238,7 +242,7 @@ button {
   position: absolute;
   top: 2.5vw;
   right: 2.5vw;
-  padding: 0.2vw;
+  padding: 0.75vw 1vw;
 }
 .current-todo-wrap {
   margin: 0 auto;
