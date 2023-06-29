@@ -314,13 +314,13 @@ function timerStartFunction() {
         JSON.stringify({ ...chosenMode })
       );
     } else if (chosenMode.name === "pomodoro" && time == 0) {
+      donePomodoroCount++;
+      localStorage.setItem(
+        "donePomodoroCount",
+        JSON.stringify(donePomodoroCount)
+      );
       if (todos.length > 0) {
         todos[0].iterate();
-        donePomodoroCount++;
-        localStorage.setItem(
-          "donePomodoroCount",
-          JSON.stringify(donePomodoroCount)
-        );
       }
       timerIsActive = false;
       clearInterval(interval);
@@ -340,13 +340,15 @@ function timerResetFunction() {
   const chosenMode = modes.find((el) => el.isChosen);
   chosenMode.timeLeft = 0;
   localStorage.setItem(`${chosenMode.name}`, JSON.stringify({ ...chosenMode }));
-  if (chosenMode.name === "pomodoro" && todos.length > 0) {
-    todos[0].iterate();
+  if (chosenMode.name === "pomodoro") {
     donePomodoroCount++;
     localStorage.setItem(
       "donePomodoroCount",
       JSON.stringify(donePomodoroCount)
     );
+    if (todos.length > 0) {
+      todos[0].iterate();
+    }
   }
   changeModeFunction();
 }
