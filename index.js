@@ -20,10 +20,26 @@ class Todo {
     this.description = description;
     this.takesPomos = takesPomos;
     this.completed = false;
+    this.currentPomo = 0;
   }
 
-  markComplete() {
-    this.completed = true;
+  iterate() {
+    this.currentPomo++;
+    const Node = document.querySelector("#todos-list").firstChild;
+    const actual = Node.querySelector(".actual");
+    actual.textContent = this.currentPomo;
+
+    if (this.currentPomo === this.takesPomos) {
+      this.completed = true;
+      const index = todos.indexOf(this);
+      todosDone.push(this);
+      if (index !== -1) {
+        todos.splice(index, 1);
+      }
+      forceTodosRender();
+    }
+    localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
+    localStorage.setItem("todos", JSON.stringify([...todos]));
   }
 }
 
@@ -46,6 +62,12 @@ const todos = JSON.parse(localStorage.getItem("todos"))
 const todosDone = JSON.parse(localStorage.getItem("todosDone"))
   ? JSON.parse(localStorage.getItem("todosDone"))
   : [];
+// Восстановление прототипа Todo для тудушек
+// (после хранения в local storage прототип слетает)
+todos.forEach((el) => {
+  Object.setPrototypeOf(el, Todo.prototype);
+});
+
 // все переменные по settings
 let donePomodoroCount =
   +JSON.parse(localStorage.getItem("donePomodoroCount")) || 0;
@@ -292,13 +314,16 @@ function timerStartFunction() {
         JSON.stringify({ ...chosenMode })
       );
     } else if (chosenMode.name === "pomodoro" && time == 0) {
+      if (todos.length > 0) {
+        todos[0].iterate();
+        donePomodoroCount++;
+        localStorage.setItem(
+          "donePomodoroCount",
+          JSON.stringify(donePomodoroCount)
+        );
+      }
       timerIsActive = false;
       clearInterval(interval);
-      donePomodoroCount++;
-      localStorage.setItem(
-        "donePomodoroCount",
-        JSON.stringify(donePomodoroCount)
-      );
       changeModeFunction();
     } else if (chosenMode.name !== "pomodoro" && time == 0) {
       changeModeFunction();
@@ -315,7 +340,8 @@ function timerResetFunction() {
   const chosenMode = modes.find((el) => el.isChosen);
   chosenMode.timeLeft = 0;
   localStorage.setItem(`${chosenMode.name}`, JSON.stringify({ ...chosenMode }));
-  if (chosenMode.name === "pomodoro") {
+  if (chosenMode.name === "pomodoro" && todos.length > 0) {
+    todos[0].iterate();
     donePomodoroCount++;
     localStorage.setItem(
       "donePomodoroCount",
@@ -365,7 +391,7 @@ function deleteTodoDoneFunction() {
   forceTodosRender();
 }
 //функция для рендера тудушки
-function renderTodo(description, takesPomos) {
+function renderTodo(description, takesPomos, currentPomo = 0) {
   const todoList = document.getElementById("todos-list");
   const todoElement = document.createElement("li");
   todoElement.innerHTML = `
@@ -376,7 +402,7 @@ function renderTodo(description, takesPomos) {
         <p class="large-text">${description}</p>
         <div class="todo-settings">
           <div class="pomo-iterations">
-            <span class="pomo-iterations__actual actual"> 0 </span>
+            <span class="pomo-iterations__actual actual">${currentPomo}</span>
             <span>/</span>
             <span class="pomo-iterations__expected expected">
               ${takesPomos}
@@ -572,7 +598,7 @@ function forceTodosRender() {
   // рендерим сделанные тудушки, если есть
   if (todosDone.length > 0) {
     todosDone.forEach((el) => {
-      renderTodoDone(el.description, el.takesPomos);
+      renderTodoDone(el.description);
     });
     if (
       document.querySelector(".todosDone-wrapper").classList.contains("none")
@@ -583,7 +609,7 @@ function forceTodosRender() {
   // рендерим тудушки, если есть
   if (todos.length > 0) {
     todos.forEach((el) => {
-      renderTodo(el.description, el.takesPomos);
+      renderTodo(el.description, el.takesPomos, el.currentPomo);
     });
 
     //рендерим под цифрами таймера название текущей тудушки над которой работаем
