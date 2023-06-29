@@ -132,7 +132,7 @@ const createTodoModal = document.querySelector(".create-todo-modal");
 
 //слушатель по открытию модалки для создания тудушки
 addTodoButton.addEventListener("click", () => {
-  createTodoModal.classList.toggle("none");
+  createTodoModal.classList.remove("none");
   todosHeader.classList.add("none");
   todosBody.classList.add("none");
   newTodoText.focus();
@@ -143,14 +143,22 @@ cancelNewTodo.addEventListener("click", () => {
     document.getElementById("newTodoText").classList.remove("errAnim");
   }
   createTodoModal.classList.toggle("none");
-  todosHeader.classList.toggle("none");
-  todosBody.classList.toggle("none");
+  if (todos.length === 0) {
+    todosHeader.classList.add("none");
+    todosBody.classList.add("none");
+    buttonEmpty.classList.remove("none");
+  } else if (todos.length > 0) {
+    todosHeader.classList.remove("none");
+    todosBody.classList.remove("none");
+  }
+
   newTodoText.value = "";
   newTodoTakesPomos.value = "1";
   buttonEmpty.addEventListener(
     "click",
     () => {
-      createTodoModal.classList.toggle("none");
+      buttonEmpty.classList.add("none");
+      createTodoModal.classList.remove("none");
       newTodoText.focus();
     },
     { once: true }
@@ -592,6 +600,7 @@ function forceTodosRender() {
   buttonEmpty.addEventListener(
     "click",
     () => {
+      buttonEmpty.classList.add("none");
       createTodoModal.classList.remove("none");
       newTodoText.focus();
     },
