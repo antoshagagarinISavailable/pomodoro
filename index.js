@@ -438,7 +438,7 @@ function renderTodo(description, takesPomos, currentPomo = 0) {
     >
       <circle cx="8" cy="8" r="4"  />
     </svg>
-        <p class="large-text">${description}</p>
+        <p>${description}</p>
         <div class="todo-settings">
           <div class="pomo-iterations">
             <span class="pomo-iterations__actual actual">${currentPomo}</span>
