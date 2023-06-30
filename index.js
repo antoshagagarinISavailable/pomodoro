@@ -324,8 +324,10 @@ function timerStartFunction() {
   startButton.textContent = timerIsActive ? "pause" : "start";
   resetButton.classList.remove("none");
   //рендер цвета кружка рядом с первой тудушкой
-  document.querySelector("li:first-of-type .indicateCircle").style.fill =
-    timerIsActive ? "#8db600" : "#8db60080";
+  if (todos.length > 0) {
+    document.querySelector("li:first-of-type .indicateCircle").style.fill =
+      timerIsActive ? "#8db600" : "#8db60080";
+  }
   interval = setInterval(() => {
     if (time > 0 && timerIsActive) {
       time--;
@@ -362,8 +364,10 @@ function timerResetFunction() {
   startButton.textContent = "start";
   resetButton.classList.add("none");
   //рендер цвета кружка рядом с первой тудушкой
-  document.querySelector("li:first-of-type .indicateCircle").style.fill =
-    "#8db60080";
+  if (todos.length > 0) {
+    document.querySelector("li:first-of-type .indicateCircle").style.fill =
+      "#8db60080";
+  }
   clearInterval(interval);
   const chosenMode = modes.find((el) => el.isChosen);
   chosenMode.timeLeft = 0;
