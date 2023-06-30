@@ -323,7 +323,9 @@ function timerStartFunction() {
   //рендер текста для кнопки start
   startButton.textContent = timerIsActive ? "pause" : "start";
   resetButton.classList.remove("none");
-
+  //рендер цвета кружка рядом с первой тудушкой
+  document.querySelector("li:first-of-type .indicateCircle").style.fill =
+    timerIsActive ? "#8db600" : "#ffac1c";
   interval = setInterval(() => {
     if (time > 0 && timerIsActive) {
       time--;
@@ -359,6 +361,9 @@ function timerResetFunction() {
   //рендер текста для кнопки start
   startButton.textContent = "start";
   resetButton.classList.add("none");
+  //рендер цвета кружка рядом с первой тудушкой
+  document.querySelector("li:first-of-type .indicateCircle").style.fill =
+    "#ffac1c";
   clearInterval(interval);
   const chosenMode = modes.find((el) => el.isChosen);
   chosenMode.timeLeft = 0;
