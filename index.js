@@ -325,7 +325,7 @@ function timerStartFunction() {
   resetButton.classList.remove("none");
   //рендер цвета кружка рядом с первой тудушкой
   document.querySelector("li:first-of-type .indicateCircle").style.fill =
-    timerIsActive ? "#8db600" : "#ffac1c";
+    timerIsActive ? "#8db600" : "#8db60080";
   interval = setInterval(() => {
     if (time > 0 && timerIsActive) {
       time--;
@@ -363,7 +363,7 @@ function timerResetFunction() {
   resetButton.classList.add("none");
   //рендер цвета кружка рядом с первой тудушкой
   document.querySelector("li:first-of-type .indicateCircle").style.fill =
-    "#ffac1c";
+    "#8db60080";
   clearInterval(interval);
   const chosenMode = modes.find((el) => el.isChosen);
   chosenMode.timeLeft = 0;
@@ -434,9 +434,9 @@ function renderTodo(description, takesPomos, currentPomo = 0) {
       width="16"
       height="16"
       viewBox="0 0 16 16"
-      fill="#fff"
+      fill="#ffffff80"
     >
-      <circle cx="8" cy="8" r="4" opacity="0.5" />
+      <circle cx="8" cy="8" r="4"  />
     </svg>
         <p class="large-text">${description}</p>
         <div class="todo-settings">

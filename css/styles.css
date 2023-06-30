@@ -188,7 +188,7 @@ button {
   border-bottom: 1px solid var(--bg-light);
 }
 li:first-of-type .indicateCircle {
-  fill: #ffac1c;
+  fill: #8db60080;
 }
 .todoDone-wrap {
   padding: 5vmax 0;
