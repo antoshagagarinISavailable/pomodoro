@@ -18,28 +18,37 @@ class timerMode {
 class Todo {
   constructor(description, takesPomos) {
     this.description = description;
-    this.takesPomos = takesPomos;
+    this.takesPomos = +takesPomos;
     this.completed = false;
     this.currentPomo = 0;
   }
 
-  iterate() {
+  increaseCurrentPomo() {
     this.currentPomo++;
+    if (this.currentPomo >= this.takesPomos) {
+      this.completed = true;
+    }
+  }
+
+  iterate() {
+    this.increaseCurrentPomo();
     const Node = document.querySelector("#todos-list").firstChild;
     const actual = Node.querySelector(".actual");
     actual.textContent = this.currentPomo;
+    this.moveToCompleted();
+  }
 
-    if (this.currentPomo === this.takesPomos) {
-      this.completed = true;
+  moveToCompleted() {
+    if (this.completed) {
       const index = todos.indexOf(this);
       todosDone.push(this);
       if (index !== -1) {
         todos.splice(index, 1);
       }
       forceTodosRender();
+      localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
+      localStorage.setItem("todos", JSON.stringify([...todos]));
     }
-    localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
-    localStorage.setItem("todos", JSON.stringify([...todos]));
   }
 }
 
@@ -66,6 +75,7 @@ const todosDone = JSON.parse(localStorage.getItem("todosDone"))
 // (после хранения в local storage прототип слетает)
 todos.forEach((el) => {
   Object.setPrototypeOf(el, Todo.prototype);
+  el.takesPomos = Number(el.takesPomos);
 });
 
 // все переменные по settings
@@ -203,7 +213,10 @@ const editTodoModal = document.querySelector(".edit-todo-modal");
 
 // инпут с тектом редактирования тудушки
 const editTodoText = document.querySelector("#editTodoText");
+// инпут с количеством pomo для редактирования
 const editTakesPomos = document.querySelector("#editTakesPomos");
+// чекбокс сделано/не сделано
+const processingState = document.querySelector("#processingState");
 
 // кнопка сохранения изменений
 const saveEditTodoButton = document.querySelector("#saveEditTodo");
@@ -273,16 +286,26 @@ function saveEditTodoFunction() {
   const parentNode = this.parentNode.parentNode;
   const newDescription = parentNode.querySelector("#editTodoText").value;
   const newTakesPomos = parentNode.querySelector("#editTakesPomos").value;
+  const newProcessingState =
+    parentNode.querySelector("#processingState").checked;
   const index = todos.findIndex(
     (el) => el.description === bufferTodo.description
   );
   if (index !== -1 && newDescription !== "" && newTakesPomos > 0) {
     todos[index].description = newDescription;
     todos[index].takesPomos = newTakesPomos;
-    localStorage.setItem("todos", JSON.stringify([...todos]));
+    todos[index].completed = newProcessingState;
+    if (todos[index].completed) {
+      todosDone.push(todos[index]);
+      if (index !== -1) {
+        todos.splice(index, 1);
+      }
+    }
     editTodoModal.classList.add("none");
     todosHeader.classList.remove("none");
     todosBody.classList.remove("none");
+    localStorage.setItem("todosDone", JSON.stringify([...todosDone]));
+    localStorage.setItem("todos", JSON.stringify([...todos]));
     forceTodosRender();
   } else if (newDescription === "") {
     editTodoText.classList.add("errAnim");
@@ -398,9 +421,18 @@ function renderTodo(description, takesPomos, currentPomo = 0) {
   const todoElement = document.createElement("li");
   todoElement.innerHTML = `
       <div class="todo-wrap">
-
-        <input type="checkbox" class="processingState" aria-label="shows if the task already done or not"/>
-
+      <svg
+      class="indicateCircle"
+      xmlns="http://www.w3.org/2000/svg"
+      x="0px"
+      y="0px"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="#fff"
+    >
+      <circle cx="8" cy="8" r="4" opacity="0.5" />
+    </svg>
         <p class="large-text">${description}</p>
         <div class="todo-settings">
           <div class="pomo-iterations">
@@ -423,14 +455,9 @@ function renderTodo(description, takesPomos, currentPomo = 0) {
     document.querySelectorAll(".todoEditButton")[
       document.querySelectorAll(".todoEditButton").length - 1
     ];
-  const checkBox =
-    document.querySelectorAll(".processingState")[
-      document.querySelectorAll(".processingState").length - 1
-    ];
 
   // чтобы навесить именно той тудушке, которая сейчас рендерится
   editButton.addEventListener("click", editTodoOpen);
-  checkBox.addEventListener("change", todoManualChangeState);
 }
 //функция для ручного выполнения тудушки по клику на чекбокс
 function todoManualChangeState() {
@@ -458,6 +485,7 @@ function editTodoOpen() {
   bufferTodo = new Todo(description, pomos);
   editTodoText.value = description;
   editTakesPomos.value = pomos;
+  processingState.checked = false;
 }
 // функция редактирования/удаления существующей тудушки
 function editTodo() {}
