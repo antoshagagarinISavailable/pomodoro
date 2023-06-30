@@ -192,7 +192,7 @@ cancelNewTodo.addEventListener("click", () => {
   }
 
   newTodoText.value = "";
-  newTodoTakesPomos.value = "1";
+  newTodoTakesPomos.value = "";
   buttonEmpty.addEventListener(
     "click",
     () => {
@@ -205,12 +205,7 @@ cancelNewTodo.addEventListener("click", () => {
 });
 //слушатель по клику на save (проиходит создание новой тудушки)
 saveNewTodoButton.addEventListener("click", () => {
-  if (document.getElementById("newTodoText").classList.contains("errAnim")) {
-    document.getElementById("newTodoText").classList.remove("errAnim");
-  }
   addTodo();
-  newTodoText.value = "";
-  newTodoTakesPomos.value = "1";
 });
 
 // модалка редактирования тудушки
@@ -387,6 +382,7 @@ function timerResetFunction() {
   chosenMode.timeLeft = 0;
   localStorage.setItem(`${chosenMode.name}`, JSON.stringify({ ...chosenMode }));
   if (chosenMode.name === "pomodoro") {
+    sound.pomoEnd.play();
     donePomodoroCount++;
     localStorage.setItem(
       "donePomodoroCount",
@@ -395,8 +391,9 @@ function timerResetFunction() {
     if (todos.length > 0) {
       todos[0].iterate();
     }
+  } else if (chosenMode.name !== "pomodoro") {
+    sound.breakEnd.play();
   }
-  sound.breakEnd.play();
   changeModeFunction();
 }
 //функция для рендера завершенной тудушки
@@ -526,11 +523,6 @@ function addTodo() {
   if (description.trim() === "") {
     sound.err.play();
     descriptionNode.classList.add("errAnim");
-    descriptionNode.addEventListener("input", () => {
-      if (descriptionNode.classList.contains("errAnim")) {
-        descriptionNode.classList.remove("errAnim");
-      }
-    });
   } else if (!takesPomos || takesPomos < 1) {
     sound.err.play();
     takesPomosNode.classList.add("errAnim");
@@ -567,8 +559,8 @@ function addTodo() {
         todos[0].description;
     }
     //обнуляем инпуты
-    document.getElementById("newTodoText").value = "";
-    document.getElementById("newTodoTakesPomos").value = 1;
+    newTodoText.value = "";
+    newTodoTakesPomos.value = "";
   }
 }
 //универсальная функция для переключения таймеров
@@ -751,7 +743,7 @@ newTodoText.addEventListener("animationend", () => {
   newTodoText.classList.remove("errAnim");
 });
 newTodoTakesPomos.addEventListener("animationend", () => {
-  editTakesPomos.classList.remove("errAnim");
+  newTodoTakesPomos.classList.remove("errAnim");
 });
 editTodoText.addEventListener("keypress", (e) => {
   if (e.keyCode === 13 && editTodoText.value !== "") {
