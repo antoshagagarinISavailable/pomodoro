@@ -51,6 +51,13 @@ class Todo {
     }
   }
 }
+//объект для звуков
+const sound = {
+  pomoEnd: new Audio("./sounds/pomoEnd.m4a"),
+  breakEnd: new Audio("./sounds/breakEnd.m4a"),
+  tick: new Audio("./sounds/tick.m4a"),
+  err: new Audio("./sounds/err.m4a"),
+};
 
 //создаем экземпляры класса которые содержат информацию о режиме таймера
 const pomodoro = new timerMode("pomodoro", 25);
@@ -309,8 +316,10 @@ function saveEditTodoFunction() {
     forceTodosRender();
   } else if (newDescription === "") {
     editTodoText.classList.add("errAnim");
+    sound.err.play();
   } else if (newTakesPomos < 1 || !newTakesPomos) {
     editTakesPomos.classList.add("errAnim");
+    sound.err.play();
   }
 }
 //функция запуска/паузы таймера
@@ -319,6 +328,9 @@ function timerStartFunction() {
   let time =
     chosenMode.timeLeft == 0 ? chosenMode.getTime() : chosenMode.timeLeft;
   timerIsActive = !timerIsActive;
+  if (timerIsActive) {
+    sound.tick.play();
+  }
   clearInterval(interval);
   //рендер текста для кнопки start
   startButton.textContent = timerIsActive ? "pause" : "start";
@@ -342,6 +354,7 @@ function timerStartFunction() {
       );
     } else if (chosenMode.name === "pomodoro" && time == 0) {
       donePomodoroCount++;
+      sound.pomoEnd.play();
       localStorage.setItem(
         "donePomodoroCount",
         JSON.stringify(donePomodoroCount)
@@ -353,9 +366,10 @@ function timerStartFunction() {
       clearInterval(interval);
       changeModeFunction();
     } else if (chosenMode.name !== "pomodoro" && time == 0) {
+      sound.breakEnd.play();
       changeModeFunction();
     }
-  }, 1000);
+  }, 1);
 }
 //функция для сброса таймера
 function timerResetFunction() {
@@ -382,6 +396,7 @@ function timerResetFunction() {
       todos[0].iterate();
     }
   }
+  sound.breakEnd.play();
   changeModeFunction();
 }
 //функция для рендера завершенной тудушки
@@ -509,6 +524,7 @@ function addTodo() {
 
   // проверяем значения из формы на пустоту или неверные значения
   if (description.trim() === "") {
+    sound.err.play();
     descriptionNode.classList.add("errAnim");
     descriptionNode.addEventListener("input", () => {
       if (descriptionNode.classList.contains("errAnim")) {
@@ -516,6 +532,7 @@ function addTodo() {
       }
     });
   } else if (!takesPomos || takesPomos < 1) {
+    sound.err.play();
     takesPomosNode.classList.add("errAnim");
   } else if (description.trim() !== "" && takesPomos >= 1) {
     if (descriptionNode.classList.contains("errAnim")) {
@@ -740,6 +757,7 @@ editTodoText.addEventListener("keypress", (e) => {
   if (e.keyCode === 13 && editTodoText.value !== "") {
     newTodoTakesPomos.focus();
   } else if (e.keyCode === 13 && editTodoText.value === "") {
+    sound.err.play();
     editTodoText.classList.add("errAnim");
   }
 });
@@ -747,6 +765,7 @@ editTakesPomos.addEventListener("keypress", (e) => {
   if (e.keyCode === 13 && editTakesPomos.value !== 0) {
     saveEditTodoFunction.call(saveEditTodoButton);
   } else if (e.keyCode === 13 && editTakesPomos.value === "") {
+    sound.err.play();
     editTakesPomos.classList.add("errAnim");
   }
 });
@@ -754,6 +773,7 @@ newTodoText.addEventListener("keypress", (e) => {
   if (e.keyCode === 13 && newTodoText.value !== "") {
     newTodoTakesPomos.focus();
   } else if (e.keyCode === 13 && newTodoText.value === "") {
+    sound.err.play();
     newTodoText.classList.add("errAnim");
   }
 });
@@ -761,6 +781,7 @@ newTodoTakesPomos.addEventListener("keypress", (e) => {
   if (e.keyCode === 13 && newTodoTakesPomos.value !== 0) {
     addTodo();
   } else if (e.keyCode === 13 && newTodoTakesPomos.value === "") {
+    sound.err.play();
     newTodoTakesPomos.classList.add("errAnim");
   }
 });
