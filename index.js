@@ -369,7 +369,7 @@ function timerStartFunction() {
       sound.breakEnd.play();
       changeModeFunction();
     }
-  }, 1);
+  }, 1000);
 }
 //функция для сброса таймера
 function timerResetFunction() {

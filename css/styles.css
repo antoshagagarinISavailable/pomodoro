@@ -32,7 +32,7 @@ input[type="number"] {
   transform: translateX(0);
   outline: 3px solid red;
 
-  animation: errAnim 80ms ease 7 forwards;
+  animation: errAnim 100ms ease 10 forwards;
 }
 @keyframes errAnim {
   0% {
