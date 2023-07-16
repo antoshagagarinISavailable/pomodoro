@@ -127,13 +127,13 @@ settingsSaveButton.addEventListener("click", () => {
   pomodoro.timeLeft =
     +setPomodoro.value * 60 > 0 ? +setPomodoro.value * 60 : 25 * 60;
   longBreak.minutes =
-    +longBreak.value && +longBreak.value > 0 ? +longBreak.value : 15;
+    +setLongBreak.value && +setLongBreak.value > 0 ? +setLongBreak.value : 15;
   longBreak.timeLeft =
-    +longBreak.value * 60 > 0 ? +longBreak.value * 60 : 15 * 60;
+    +setLongBreak.value * 60 > 0 ? +setLongBreak.value * 60 : 15 * 60;
   quickBreak.minutes =
-    +quickBreak.value && +quickBreak.value > 0 ? +quickBreak.value : 5;
+    +setQuickBreak.value && +setQuickBreak.value > 0 ? +setQuickBreak.value : 5;
   quickBreak.timeLeft =
-    +quickBreak.value * 60 > 0 ? +quickBreak.value * 60 : 5 * 60;
+    +setQuickBreak.value * 60 > 0 ? +setQuickBreak.value * 60 : 5 * 60;
 
   longBreakInterval =
     +setLongBreakInterval.value && +setLongBreakInterval.value > 0
